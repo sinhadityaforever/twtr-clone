@@ -66,10 +66,10 @@ enum SortOrder {
 }
 
 type Tweet {
+  author: User
   content: String
   createdAt: DateTime!
   id: Int!
-  user: User
 }
 
 type User {
@@ -78,7 +78,7 @@ type User {
   name: String
   posts: [Post!]!
   profile: Profile
-  tweet: Tweet
+  tweets: [Tweet]
 }
 
 input UserCreateInput {

@@ -278,7 +278,7 @@ const Tweet = objectType({
     t.nonNull.int('id')
     t.nonNull.field('createdAt', { type: 'DateTime' })
     t.string('content')
-    t.field('user', {
+    t.field('author', {
       type: 'User',
       resolve: (parent, _, context) => {
         return context.prisma.tweet
@@ -319,9 +319,9 @@ const User = objectType({
             .Profile()
         },
       }),
-      t.field('tweet', {
+      t.list.field('tweets', {
         type: 'Tweet',
-        resolve: (parent, _, ctx) => {
+        resolve: (parent, _, ctx: Context) => {
           return ctx.prisma.user
             .findUnique({
               where: {
