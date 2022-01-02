@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import "../styles/login.css";
 import { useLoginMutation } from "../generated/graphql";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import TwitterLogo from "../assets/twitter-logo.png";
 interface ILoginProps {}
 
 const Login: React.FunctionComponent<ILoginProps> = (props) => {
@@ -24,7 +25,14 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
   });
 
   return (
-    <div>
+    <div className="container">
+      <img
+        src={TwitterLogo}
+        alt="logo"
+        style={{ width: "50px" }}
+        className="logo"
+      />
+      <h3>Log in to Fake Twitter</h3>
       <h1>Login</h1>
       <Formik
         initialValues={initialValues}
@@ -51,9 +59,15 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
           <Field name="password" type="password" placeholder="password" />
           <ErrorMessage name="password" component={"div"} />
 
-          <button type="submit">Login</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
         </Form>
       </Formik>
+      <div className="register">
+        <h4>Don't have an account?</h4>
+        <Link to="/signup">Sign up</Link>
+      </div>
     </div>
   );
 };

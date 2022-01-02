@@ -248,6 +248,51 @@ const Mutation = objectType({
   },
 })
 
+const Profile = objectType({
+  name: 'Profile',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.field('createdAt', { type: 'DateTime' })
+    t.string('bio')
+    t.string('website')
+    t.string('avatar')
+    t.string('location')
+    t.field('user', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        return context.prisma.profile
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .User()
+      },
+    })
+  },
+})
+
+const Tweet = objectType({
+  name: 'Tweet',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.field('createdAt', { type: 'DateTime' })
+    t.string('content')
+    t.field('user', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        return context.prisma.tweet
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .author()
+      },
+    })
+  },
+})
+
 const User = objectType({
   name: 'User',
   definition(t) {
@@ -263,7 +308,29 @@ const User = objectType({
           })
           .posts()
       },
-    })
+    }),
+      t.field('profile', {
+        type: 'Profile',
+        resolve: (parent, _, context) => {
+          return context.prisma.user
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .Profile()
+        },
+      }),
+      t.field('tweet', {
+        type: 'Tweet',
+        resolve: (parent, _, ctx) => {
+          return ctx.prisma.user
+            .findUnique({
+              where: {
+                id: parent.id,
+              },
+            })
+            .tweets()
+        },
+      })
   },
 })
 
@@ -339,7 +406,9 @@ const schemaWithoutPermissions = makeSchema({
   types: [
     Query,
     Mutation,
+    Profile,
     Post,
+    Tweet,
     User,
     AuthPayload,
     UserUniqueInput,

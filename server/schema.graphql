@@ -41,6 +41,16 @@ input PostOrderByUpdatedAtInput {
   updatedAt: SortOrder!
 }
 
+type Profile {
+  avatar: String
+  bio: String
+  createdAt: DateTime!
+  id: Int!
+  location: String
+  user: User
+  website: String
+}
+
 type Query {
   allUsers: [User!]!
   draftsByUser(userUniqueInput: UserUniqueInput!): [Post]
@@ -55,11 +65,20 @@ enum SortOrder {
   desc
 }
 
+type Tweet {
+  content: String
+  createdAt: DateTime!
+  id: Int!
+  user: User
+}
+
 type User {
   email: String!
   id: Int!
   name: String
   posts: [Post!]!
+  profile: Profile
+  tweet: Tweet
 }
 
 input UserCreateInput {

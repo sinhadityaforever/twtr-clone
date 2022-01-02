@@ -2,8 +2,9 @@ import * as React from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useSignupMutation } from "../generated/graphql";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import TwitterLogo from "../assets/twitter-logo.png";
+import "../styles/login.css";
 interface ISignupProps {}
 
 const Signup: React.FunctionComponent<ISignupProps> = (props) => {
@@ -33,8 +34,14 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
   });
 
   return (
-    <div>
-      <h1>Signup</h1>
+    <div className="container">
+      <img
+        src={TwitterLogo}
+        alt="logo"
+        style={{ width: "50px" }}
+        className="logo"
+      />
+      <h3>Sign up</h3>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -65,9 +72,15 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
             placeholder="Confirm password"
           />
           <ErrorMessage name="Confirm password" component={"div"} />
-          <button type="submit">Signup</button>
+          <button type="submit" className="login-button">
+            <span>Sign up</span>
+          </button>
         </Form>
       </Formik>
+      <div className="register">
+        <h4>Already have an account?</h4>
+        <Link to="/login">Log in</Link>
+      </div>
     </div>
   );
 };
