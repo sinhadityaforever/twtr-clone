@@ -22,12 +22,12 @@ export const DateTime = asNexusMethod(DateTimeResolver, 'date')
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('allUsers', {
-      type: 'User',
-      resolve: (_parent, _args, context: Context) => {
-        return context.prisma.user.findMany()
-      },
-    })
+    // t.nonNull.list.nonNull.field('allUsers', {
+    //   type: 'User',
+    //   resolve: (_parent, _args, context: Context) => {
+    //     return context.prisma.user.findMany()
+    //   },
+    // })
 
     t.nullable.field('me', {
       type: 'User',
@@ -41,49 +41,49 @@ const Query = objectType({
       },
     })
 
-    t.nullable.field('postById', {
-      type: 'Post',
-      args: {
-        id: intArg(),
-      },
-      resolve: (_parent, args, context: Context) => {
-        return context.prisma.post.findUnique({
-          where: { id: args.id || undefined },
-        })
-      },
-    })
+    // t.nullable.field('postById', {
+    //   type: 'Post',
+    //   args: {
+    //     id: intArg(),
+    //   },
+    //   resolve: (_parent, args, context: Context) => {
+    //     return context.prisma.post.findUnique({
+    //       where: { id: args.id || undefined },
+    //     })
+    //   },
+    // })
 
-    t.nonNull.list.nonNull.field('feed', {
-      type: 'Post',
-      args: {
-        searchString: stringArg(),
-        skip: intArg(),
-        take: intArg(),
-        orderBy: arg({
-          type: 'PostOrderByUpdatedAtInput',
-        }),
-      },
-      resolve: (_parent, args, context: Context) => {
-        const or = args.searchString
-          ? {
-              OR: [
-                { title: { contains: args.searchString } },
-                { content: { contains: args.searchString } },
-              ],
-            }
-          : {}
+    // t.nonNull.list.nonNull.field('feed', {
+    //   type: 'Post',
+    //   args: {
+    //     searchString: stringArg(),
+    //     skip: intArg(),
+    //     take: intArg(),
+    //     orderBy: arg({
+    //       type: 'PostOrderByUpdatedAtInput',
+    //     }),
+    //   },
+    //   resolve: (_parent, args, context: Context) => {
+    //     const or = args.searchString
+    //       ? {
+    //           OR: [
+    //             { title: { contains: args.searchString } },
+    //             { content: { contains: args.searchString } },
+    //           ],
+    //         }
+    //       : {}
 
-        return context.prisma.post.findMany({
-          where: {
-            published: true,
-            ...or,
-          },
-          take: args.take || undefined,
-          skip: args.skip || undefined,
-          orderBy: args.orderBy || undefined,
-        })
-      },
-    })
+    //     return context.prisma.post.findMany({
+    //       where: {
+    //         published: true,
+    //         ...or,
+    //       },
+    //       take: args.take || undefined,
+    //       skip: args.skip || undefined,
+    //       orderBy: args.orderBy || undefined,
+    //     })
+    //   },
+    // })
 
     t.list.field('users', {
       type: 'User',
@@ -92,30 +92,30 @@ const Query = objectType({
       },
     })
 
-    t.list.field('draftsByUser', {
-      type: 'Post',
-      args: {
-        userUniqueInput: nonNull(
-          arg({
-            type: 'UserUniqueInput',
-          }),
-        ),
-      },
-      resolve: (_parent, args, context: Context) => {
-        return context.prisma.user
-          .findUnique({
-            where: {
-              id: args.userUniqueInput.id || undefined,
-              email: args.userUniqueInput.email || undefined,
-            },
-          })
-          .posts({
-            where: {
-              published: false,
-            },
-          })
-      },
-    })
+    // t.list.field('draftsByUser', {
+    //   type: 'Post',
+    //   args: {
+    //     userUniqueInput: nonNull(
+    //       arg({
+    //         type: 'UserUniqueInput',
+    //       }),
+    //     ),
+    //   },
+    //   resolve: (_parent, args, context: Context) => {
+    //     return context.prisma.user
+    //       .findUnique({
+    //         where: {
+    //           id: args.userUniqueInput.id || undefined,
+    //           email: args.userUniqueInput.email || undefined,
+    //         },
+    //       })
+    //       .posts({
+    //         where: {
+    //           published: false,
+    //         },
+    //       })
+    //   },
+    // })
   },
 })
 
@@ -145,6 +145,26 @@ const Mutation = objectType({
       },
     })
 
+    t.field('createProfile', {
+      type: 'Profile',
+      args: {
+        bio: stringArg(),
+        location: stringArg(),
+        website: stringArg(),
+        avatar: stringArg(),
+      },
+      resolve: (parent, args, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user')
+        return ctx.prisma.profile.create({
+          data: {
+            ...args,
+            User: { connect: { id: Number(userId) } },
+          },
+        })
+      },
+    })
+
     t.field('login', {
       type: 'AuthPayload',
       args: {
@@ -171,80 +191,104 @@ const Mutation = objectType({
       },
     })
 
-    t.field('createDraft', {
-      type: 'Post',
+    t.field('updateProfile', {
+      type: 'Profile',
       args: {
-        data: nonNull(
-          arg({
-            type: 'PostCreateInput',
-          }),
-        ),
+        id: intArg(),
+        bio: stringArg(),
+        location: stringArg(),
+        website: stringArg(),
+        avatar: stringArg(),
       },
-      resolve: (_, args, context: Context) => {
-        const userId = getUserId(context)
-        return context.prisma.post.create({
+      resolve: (parent, { id, ...args }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+
+        return ctx.prisma.profile.update({
           data: {
-            title: args.data.title,
-            content: args.data.content,
-            authorId: userId,
+            ...args,
+          },
+          where: {
+            id: Number(id),
           },
         })
       },
     })
 
-    t.field('togglePublishPost', {
-      type: 'Post',
-      args: {
-        id: nonNull(intArg()),
-      },
-      resolve: async (_, args, context: Context) => {
-        try {
-          const post = await context.prisma.post.findUnique({
-            where: { id: args.id || undefined },
-            select: {
-              published: true,
-            },
-          })
-          return context.prisma.post.update({
-            where: { id: args.id || undefined },
-            data: { published: !post?.published },
-          })
-        } catch (e) {
-          throw new Error(
-            `Post with ID ${args.id} does not exist in the database.`,
-          )
-        }
-      },
-    })
+    // t.field('createDraft', {
+    //   type: 'Post',
+    //   args: {
+    //     data: nonNull(
+    //       arg({
+    //         type: 'PostCreateInput',
+    //       }),
+    //     ),
+    //   },
+    //   resolve: (_, args, context: Context) => {
+    //     const userId = getUserId(context)
+    //     return context.prisma.post.create({
+    //       data: {
+    //         title: args.data.title,
+    //         content: args.data.content,
+    //         authorId: userId,
+    //       },
+    //     })
+    //   },
+    // })
 
-    t.field('incrementPostViewCount', {
-      type: 'Post',
-      args: {
-        id: nonNull(intArg()),
-      },
-      resolve: (_, args, context: Context) => {
-        return context.prisma.post.update({
-          where: { id: args.id || undefined },
-          data: {
-            viewCount: {
-              increment: 1,
-            },
-          },
-        })
-      },
-    })
+    // t.field('togglePublishPost', {
+    //   type: 'Post',
+    //   args: {
+    //     id: nonNull(intArg()),
+    //   },
+    //   resolve: async (_, args, context: Context) => {
+    //     try {
+    //       const post = await context.prisma.post.findUnique({
+    //         where: { id: args.id || undefined },
+    //         select: {
+    //           published: true,
+    //         },
+    //       })
+    //       return context.prisma.post.update({
+    //         where: { id: args.id || undefined },
+    //         data: { published: !post?.published },
+    //       })
+    //     } catch (e) {
+    //       throw new Error(
+    //         `Post with ID ${args.id} does not exist in the database.`,
+    //       )
+    //     }
+    //   },
+    // })
 
-    t.field('deletePost', {
-      type: 'Post',
-      args: {
-        id: nonNull(intArg()),
-      },
-      resolve: (_, args, context: Context) => {
-        return context.prisma.post.delete({
-          where: { id: args.id },
-        })
-      },
-    })
+    // t.field('incrementPostViewCount', {
+    //   type: 'Post',
+    //   args: {
+    //     id: nonNull(intArg()),
+    //   },
+    //   resolve: (_, args, context: Context) => {
+    //     return context.prisma.post.update({
+    //       where: { id: args.id || undefined },
+    //       data: {
+    //         viewCount: {
+    //           increment: 1,
+    //         },
+    //       },
+    //     })
+    //   },
+    // })
+
+    // t.field('deletePost', {
+    //   type: 'Post',
+    //   args: {
+    //     id: nonNull(intArg()),
+    //   },
+    //   resolve: (_, args, context: Context) => {
+    //     return context.prisma.post.delete({
+    //       where: { id: args.id },
+    //     })
+    //   },
+    // })
   },
 })
 
@@ -319,18 +363,21 @@ const User = objectType({
             .Profile()
         },
       }),
-      t.list.field('tweets', {
-        type: 'Tweet',
-        resolve: (parent, _, ctx: Context) => {
-          return ctx.prisma.user
-            .findUnique({
-              where: {
-                id: parent.id,
-              },
-            })
-            .tweets()
+      t.list.field(
+        'tweets', //should match 'tweets' field of user
+        {
+          type: 'Tweet', //should match the schema you created in this file
+          resolve: (parent, _, ctx: Context) => {
+            return ctx.prisma.user
+              .findUnique({
+                where: {
+                  id: parent.id,
+                },
+              })
+              .tweets() //should match 'tweets' field of user
+          },
         },
-      })
+      )
   },
 })
 

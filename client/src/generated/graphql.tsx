@@ -25,27 +25,18 @@ export type AuthPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createDraft?: Maybe<Post>;
-  deletePost?: Maybe<Post>;
-  incrementPostViewCount?: Maybe<Post>;
+  createProfile?: Maybe<Profile>;
   login?: Maybe<AuthPayload>;
   signup?: Maybe<AuthPayload>;
-  togglePublishPost?: Maybe<Post>;
+  updateProfile?: Maybe<Profile>;
 };
 
 
-export type MutationCreateDraftArgs = {
-  data: PostCreateInput;
-};
-
-
-export type MutationDeletePostArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationIncrementPostViewCountArgs = {
-  id: Scalars['Int'];
+export type MutationCreateProfileArgs = {
+  avatar?: InputMaybe<Scalars['String']>;
+  bio?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
+  website?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -62,8 +53,12 @@ export type MutationSignupArgs = {
 };
 
 
-export type MutationTogglePublishPostArgs = {
-  id: Scalars['Int'];
+export type MutationUpdateProfileArgs = {
+  avatar?: InputMaybe<Scalars['String']>;
+  bio?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  location?: InputMaybe<Scalars['String']>;
+  website?: InputMaybe<Scalars['String']>;
 };
 
 export type Post = {
@@ -87,32 +82,21 @@ export type PostOrderByUpdatedAtInput = {
   updatedAt: SortOrder;
 };
 
+export type Profile = {
+  __typename?: 'Profile';
+  avatar?: Maybe<Scalars['String']>;
+  bio?: Maybe<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['Int'];
+  location?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+  website?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  allUsers: Array<User>;
-  draftsByUser?: Maybe<Array<Maybe<Post>>>;
-  feed: Array<Post>;
   me?: Maybe<User>;
-  postById?: Maybe<Post>;
   users?: Maybe<Array<Maybe<User>>>;
-};
-
-
-export type QueryDraftsByUserArgs = {
-  userUniqueInput: UserUniqueInput;
-};
-
-
-export type QueryFeedArgs = {
-  orderBy?: InputMaybe<PostOrderByUpdatedAtInput>;
-  searchString?: InputMaybe<Scalars['String']>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-};
-
-
-export type QueryPostByIdArgs = {
-  id?: InputMaybe<Scalars['Int']>;
 };
 
 export enum SortOrder {
@@ -120,12 +104,22 @@ export enum SortOrder {
   Desc = 'desc'
 }
 
+export type Tweet = {
+  __typename?: 'Tweet';
+  author?: Maybe<User>;
+  content?: Maybe<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
   posts: Array<Post>;
+  profile?: Maybe<Profile>;
+  tweets?: Maybe<Array<Maybe<Tweet>>>;
 };
 
 export type UserCreateInput = {
@@ -138,6 +132,16 @@ export type UserUniqueInput = {
   email?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
 };
+
+export type CreateProfileMutationVariables = Exact<{
+  bio?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
+  avatar?: InputMaybe<Scalars['String']>;
+  website?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type CreateProfileMutation = { __typename?: 'Mutation', createProfile?: { __typename?: 'Profile', id: number } | null | undefined };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
@@ -155,10 +159,26 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signup?: { __typename?: 'AuthPayload', token?: string | null | undefined } | null | undefined };
 
+export type UpdateProfileMutationVariables = Exact<{
+  bio?: InputMaybe<Scalars['String']>;
+  avatar?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
+  website?: InputMaybe<Scalars['String']>;
+  updateProfileId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'Profile', id: number } | null | undefined };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number } | null | undefined };
+
+export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -166,6 +186,47 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', name?: string | null | undefined, email: string, id: number } | null | undefined> | null | undefined };
 
 
+export const CreateProfileDocument = gql`
+    mutation createProfile($bio: String, $location: String, $avatar: String, $website: String) {
+  createProfile(
+    bio: $bio
+    location: $location
+    avatar: $avatar
+    website: $website
+  ) {
+    id
+  }
+}
+    `;
+export type CreateProfileMutationFn = Apollo.MutationFunction<CreateProfileMutation, CreateProfileMutationVariables>;
+
+/**
+ * __useCreateProfileMutation__
+ *
+ * To run a mutation, you first call `useCreateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProfileMutation, { data, loading, error }] = useCreateProfileMutation({
+ *   variables: {
+ *      bio: // value for 'bio'
+ *      location: // value for 'location'
+ *      avatar: // value for 'avatar'
+ *      website: // value for 'website'
+ *   },
+ * });
+ */
+export function useCreateProfileMutation(baseOptions?: Apollo.MutationHookOptions<CreateProfileMutation, CreateProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateProfileMutation, CreateProfileMutationVariables>(CreateProfileDocument, options);
+      }
+export type CreateProfileMutationHookResult = ReturnType<typeof useCreateProfileMutation>;
+export type CreateProfileMutationResult = Apollo.MutationResult<CreateProfileMutation>;
+export type CreateProfileMutationOptions = Apollo.BaseMutationOptions<CreateProfileMutation, CreateProfileMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -234,6 +295,49 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const UpdateProfileDocument = gql`
+    mutation UpdateProfile($bio: String, $avatar: String, $location: String, $website: String, $updateProfileId: Int) {
+  updateProfile(
+    bio: $bio
+    avatar: $avatar
+    location: $location
+    website: $website
+    id: $updateProfileId
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateProfileMutationFn = Apollo.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      bio: // value for 'bio'
+ *      avatar: // value for 'avatar'
+ *      location: // value for 'location'
+ *      website: // value for 'website'
+ *      updateProfileId: // value for 'updateProfileId'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, options);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -268,6 +372,47 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const MyProfileDocument = gql`
+    query MyProfile {
+  me {
+    id
+    profile {
+      id
+      bio
+      location
+      website
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useMyProfileQuery__
+ *
+ * To run a query within a React component, call `useMyProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyProfileQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyProfileQuery(baseOptions?: Apollo.QueryHookOptions<MyProfileQuery, MyProfileQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyProfileQuery, MyProfileQueryVariables>(MyProfileDocument, options);
+      }
+export function useMyProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyProfileQuery, MyProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyProfileQuery, MyProfileQueryVariables>(MyProfileDocument, options);
+        }
+export type MyProfileQueryHookResult = ReturnType<typeof useMyProfileQuery>;
+export type MyProfileLazyQueryHookResult = ReturnType<typeof useMyProfileLazyQuery>;
+export type MyProfileQueryResult = Apollo.QueryResult<MyProfileQuery, MyProfileQueryVariables>;
 export const UsersDocument = gql`
     query users {
   users {
@@ -304,3 +449,16 @@ export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<User
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export const namedOperations = {
+  Query: {
+    Me: 'Me',
+    MyProfile: 'MyProfile',
+    users: 'users'
+  },
+  Mutation: {
+    createProfile: 'createProfile',
+    Login: 'Login',
+    Signup: 'Signup',
+    UpdateProfile: 'UpdateProfile'
+  }
+}

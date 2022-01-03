@@ -1,0 +1,15 @@
+mutation createProfile(
+  $bio: String
+  $location: String
+  $avatar: String
+  $website: String
+) {
+  createProfile(
+    bio: $bio
+    location: $location
+    avatar: $avatar
+    website: $website
+  ) {
+    id
+  }
+}

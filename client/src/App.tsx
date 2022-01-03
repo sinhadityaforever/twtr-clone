@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import IsAuthenticated from "./components/IsAuthenticated";
 import Landing from "./components/Landing";
 import Users from "./pages/Users";
+import Profile from "./pages/Profile";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000",
@@ -41,7 +42,7 @@ function App() {
         <Route path="signup" element={<Signup></Signup>} />
         <Route path="login" element={<Login></Login>} />
         <Route path="/landing" element={<Landing></Landing>} />
-
+        <Route path="/profile" element={<Profile></Profile>} />
         <Route path="users" element={<Users></Users>} />
       </Routes>
     </ApolloProvider>
