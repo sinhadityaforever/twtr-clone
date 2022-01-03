@@ -43,7 +43,9 @@ const UpdateProfile = (props: Props) => {
 
   return (
     <div>
-      <button onClick={openModal}>Update Profile</button>
+      <button onClick={openModal} className="edit-button">
+        Edit Profile
+      </button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}

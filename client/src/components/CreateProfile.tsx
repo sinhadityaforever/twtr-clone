@@ -32,7 +32,9 @@ const CreateProfile = (props: Props) => {
 
   return (
     <div>
-      <button onClick={openModal}>Create Profile</button>
+      <button onClick={openModal} className="edit-button">
+        Create Profile
+      </button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}

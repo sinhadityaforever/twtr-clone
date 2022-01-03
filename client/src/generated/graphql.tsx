@@ -26,6 +26,7 @@ export type AuthPayload = {
 export type Mutation = {
   __typename?: 'Mutation';
   createProfile?: Maybe<Profile>;
+  createTweet?: Maybe<Tweet>;
   login?: Maybe<AuthPayload>;
   signup?: Maybe<AuthPayload>;
   updateProfile?: Maybe<Profile>;
@@ -37,6 +38,11 @@ export type MutationCreateProfileArgs = {
   bio?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   website?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateTweetArgs = {
+  content?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -143,6 +149,13 @@ export type CreateProfileMutationVariables = Exact<{
 
 export type CreateProfileMutation = { __typename?: 'Mutation', createProfile?: { __typename?: 'Profile', id: number } | null | undefined };
 
+export type CreateTweetMutationVariables = Exact<{
+  content?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type CreateTweetMutation = { __typename?: 'Mutation', createTweet?: { __typename?: 'Tweet', id: number } | null | undefined };
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -178,7 +191,7 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
+export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -227,6 +240,39 @@ export function useCreateProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateProfileMutationHookResult = ReturnType<typeof useCreateProfileMutation>;
 export type CreateProfileMutationResult = Apollo.MutationResult<CreateProfileMutation>;
 export type CreateProfileMutationOptions = Apollo.BaseMutationOptions<CreateProfileMutation, CreateProfileMutationVariables>;
+export const CreateTweetDocument = gql`
+    mutation CreateTweet($content: String) {
+  createTweet(content: $content) {
+    id
+  }
+}
+    `;
+export type CreateTweetMutationFn = Apollo.MutationFunction<CreateTweetMutation, CreateTweetMutationVariables>;
+
+/**
+ * __useCreateTweetMutation__
+ *
+ * To run a mutation, you first call `useCreateTweetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTweetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTweetMutation, { data, loading, error }] = useCreateTweetMutation({
+ *   variables: {
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function useCreateTweetMutation(baseOptions?: Apollo.MutationHookOptions<CreateTweetMutation, CreateTweetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTweetMutation, CreateTweetMutationVariables>(CreateTweetDocument, options);
+      }
+export type CreateTweetMutationHookResult = ReturnType<typeof useCreateTweetMutation>;
+export type CreateTweetMutationResult = Apollo.MutationResult<CreateTweetMutation>;
+export type CreateTweetMutationOptions = Apollo.BaseMutationOptions<CreateTweetMutation, CreateTweetMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -376,6 +422,7 @@ export const MyProfileDocument = gql`
     query MyProfile {
   me {
     id
+    name
     profile {
       id
       bio
@@ -457,6 +504,7 @@ export const namedOperations = {
   },
   Mutation: {
     createProfile: 'createProfile',
+    CreateTweet: 'CreateTweet',
     Login: 'Login',
     Signup: 'Signup',
     UpdateProfile: 'UpdateProfile'
