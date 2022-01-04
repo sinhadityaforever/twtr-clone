@@ -92,6 +92,13 @@ const Query = objectType({
       },
     })
 
+    t.list.field('tweets', {
+      type: 'Tweet',
+      resolve: (parent, args, ctx) => {
+        return ctx.prisma.tweet.findMany()
+      },
+    })
+
     // t.list.field('draftsByUser', {
     //   type: 'Post',
     //   args: {

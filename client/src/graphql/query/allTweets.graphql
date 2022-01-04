@@ -1,0 +1,15 @@
+query AllTweets {
+  tweets {
+    id
+    createdAt
+    content
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+  }
+}

@@ -52,6 +52,7 @@ type Profile {
 
 type Query {
   me: User
+  tweets: [Tweet]
   users: [User]
 }
 

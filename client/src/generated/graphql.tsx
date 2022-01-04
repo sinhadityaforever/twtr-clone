@@ -102,6 +102,7 @@ export type Profile = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  tweets?: Maybe<Array<Maybe<Tweet>>>;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -182,6 +183,11 @@ export type UpdateProfileMutationVariables = Exact<{
 
 
 export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'Profile', id: number } | null | undefined };
+
+export type AllTweetsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -384,6 +390,50 @@ export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
 export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
 export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export const AllTweetsDocument = gql`
+    query AllTweets {
+  tweets {
+    id
+    createdAt
+    content
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useAllTweetsQuery__
+ *
+ * To run a query within a React component, call `useAllTweetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllTweetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllTweetsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllTweetsQuery(baseOptions?: Apollo.QueryHookOptions<AllTweetsQuery, AllTweetsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AllTweetsQuery, AllTweetsQueryVariables>(AllTweetsDocument, options);
+      }
+export function useAllTweetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllTweetsQuery, AllTweetsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AllTweetsQuery, AllTweetsQueryVariables>(AllTweetsDocument, options);
+        }
+export type AllTweetsQueryHookResult = ReturnType<typeof useAllTweetsQuery>;
+export type AllTweetsLazyQueryHookResult = ReturnType<typeof useAllTweetsLazyQuery>;
+export type AllTweetsQueryResult = Apollo.QueryResult<AllTweetsQuery, AllTweetsQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -498,6 +548,7 @@ export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
 export const namedOperations = {
   Query: {
+    AllTweets: 'AllTweets',
     Me: 'Me',
     MyProfile: 'MyProfile',
     users: 'users'
