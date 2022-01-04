@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  name     String?
-  Profile  Profile?
-  posts    Post[]
-  tweets   Tweet[]
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  name        String?
+  Profile     Profile?
+  posts       Post[]
+  tweets      Tweet[]
+  likedTweets LikedTweet[]
 }
 
 model Post {
@@ -42,9 +43,19 @@ model Profile {
 }
 
 model Tweet {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
   content   String?
-  author    User?    @relation(fields: [authorId], references: [id])
+  author    User?        @relation(fields: [authorId], references: [id])
   authorId  Int?
+  likes     LikedTweet[]
+}
+
+model LikedTweet {
+  id      Int      @id @default(autoincrement())
+  tweet   Tweet    @relation(fields: [tweetId], references: [id])
+  likedAt DateTime @default(now())
+  userId  Int?
+  User    User?    @relation(fields: [userId], references: [id])
+  tweetId Int
 }

@@ -1,18 +1,17 @@
-query AllTweets {
+query PopularTweets {
   tweets {
     id
     createdAt
     content
-    likes {
-      id
-    }
     author {
       id
-      name
       profile {
         id
         avatar
       }
+    }
+    likes {
+      id
     }
   }
 }

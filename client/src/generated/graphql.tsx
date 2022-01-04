@@ -23,10 +23,20 @@ export type AuthPayload = {
   user?: Maybe<User>;
 };
 
+export type LikedTweet = {
+  __typename?: 'LikedTweet';
+  id: Scalars['Int'];
+  likedAt: Scalars['DateTime'];
+  tweet?: Maybe<Tweet>;
+  user?: Maybe<User>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createProfile?: Maybe<Profile>;
   createTweet?: Maybe<Tweet>;
+  deleteLike?: Maybe<LikedTweet>;
+  likeTweet?: Maybe<LikedTweet>;
   login?: Maybe<AuthPayload>;
   signup?: Maybe<AuthPayload>;
   updateProfile?: Maybe<Profile>;
@@ -43,6 +53,16 @@ export type MutationCreateProfileArgs = {
 
 export type MutationCreateTweetArgs = {
   content?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationDeleteLikeArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationLikeTweetArgs = {
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -117,12 +137,14 @@ export type Tweet = {
   content?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['Int'];
+  likes?: Maybe<Array<Maybe<LikedTweet>>>;
 };
 
 export type User = {
   __typename?: 'User';
   email: Scalars['String'];
   id: Scalars['Int'];
+  likedTweets?: Maybe<Array<Maybe<LikedTweet>>>;
   name?: Maybe<Scalars['String']>;
   posts: Array<Post>;
   profile?: Maybe<Profile>;
@@ -157,6 +179,20 @@ export type CreateTweetMutationVariables = Exact<{
 
 export type CreateTweetMutation = { __typename?: 'Mutation', createTweet?: { __typename?: 'Tweet', id: number } | null | undefined };
 
+export type DeleteLikeMutationVariables = Exact<{
+  deleteLikeId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type DeleteLikeMutation = { __typename?: 'Mutation', deleteLike?: { __typename?: 'LikedTweet', id: number } | null | undefined };
+
+export type LikeTweetMutationVariables = Exact<{
+  likeTweetId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type LikeTweetMutation = { __typename?: 'Mutation', likeTweet?: { __typename?: 'LikedTweet', id: number } | null | undefined };
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -187,7 +223,7 @@ export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: {
 export type AllTweetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
+export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -197,7 +233,12 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
+export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null | undefined, likedTweets?: Array<{ __typename?: 'LikedTweet', id: number, tweet?: { __typename?: 'Tweet', id: number } | null | undefined } | null | undefined> | null | undefined, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
+
+export type PopularTweetsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PopularTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, author?: { __typename?: 'User', id: number, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined } | null | undefined> | null | undefined };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -279,6 +320,72 @@ export function useCreateTweetMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateTweetMutationHookResult = ReturnType<typeof useCreateTweetMutation>;
 export type CreateTweetMutationResult = Apollo.MutationResult<CreateTweetMutation>;
 export type CreateTweetMutationOptions = Apollo.BaseMutationOptions<CreateTweetMutation, CreateTweetMutationVariables>;
+export const DeleteLikeDocument = gql`
+    mutation DeleteLike($deleteLikeId: Int) {
+  deleteLike(id: $deleteLikeId) {
+    id
+  }
+}
+    `;
+export type DeleteLikeMutationFn = Apollo.MutationFunction<DeleteLikeMutation, DeleteLikeMutationVariables>;
+
+/**
+ * __useDeleteLikeMutation__
+ *
+ * To run a mutation, you first call `useDeleteLikeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteLikeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteLikeMutation, { data, loading, error }] = useDeleteLikeMutation({
+ *   variables: {
+ *      deleteLikeId: // value for 'deleteLikeId'
+ *   },
+ * });
+ */
+export function useDeleteLikeMutation(baseOptions?: Apollo.MutationHookOptions<DeleteLikeMutation, DeleteLikeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteLikeMutation, DeleteLikeMutationVariables>(DeleteLikeDocument, options);
+      }
+export type DeleteLikeMutationHookResult = ReturnType<typeof useDeleteLikeMutation>;
+export type DeleteLikeMutationResult = Apollo.MutationResult<DeleteLikeMutation>;
+export type DeleteLikeMutationOptions = Apollo.BaseMutationOptions<DeleteLikeMutation, DeleteLikeMutationVariables>;
+export const LikeTweetDocument = gql`
+    mutation LikeTweet($likeTweetId: Int) {
+  likeTweet(id: $likeTweetId) {
+    id
+  }
+}
+    `;
+export type LikeTweetMutationFn = Apollo.MutationFunction<LikeTweetMutation, LikeTweetMutationVariables>;
+
+/**
+ * __useLikeTweetMutation__
+ *
+ * To run a mutation, you first call `useLikeTweetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLikeTweetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [likeTweetMutation, { data, loading, error }] = useLikeTweetMutation({
+ *   variables: {
+ *      likeTweetId: // value for 'likeTweetId'
+ *   },
+ * });
+ */
+export function useLikeTweetMutation(baseOptions?: Apollo.MutationHookOptions<LikeTweetMutation, LikeTweetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LikeTweetMutation, LikeTweetMutationVariables>(LikeTweetDocument, options);
+      }
+export type LikeTweetMutationHookResult = ReturnType<typeof useLikeTweetMutation>;
+export type LikeTweetMutationResult = Apollo.MutationResult<LikeTweetMutation>;
+export type LikeTweetMutationOptions = Apollo.BaseMutationOptions<LikeTweetMutation, LikeTweetMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -396,6 +503,9 @@ export const AllTweetsDocument = gql`
     id
     createdAt
     content
+    likes {
+      id
+    }
     author {
       id
       name
@@ -473,6 +583,12 @@ export const MyProfileDocument = gql`
   me {
     id
     name
+    likedTweets {
+      id
+      tweet {
+        id
+      }
+    }
     profile {
       id
       bio
@@ -510,6 +626,52 @@ export function useMyProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type MyProfileQueryHookResult = ReturnType<typeof useMyProfileQuery>;
 export type MyProfileLazyQueryHookResult = ReturnType<typeof useMyProfileLazyQuery>;
 export type MyProfileQueryResult = Apollo.QueryResult<MyProfileQuery, MyProfileQueryVariables>;
+export const PopularTweetsDocument = gql`
+    query PopularTweets {
+  tweets {
+    id
+    createdAt
+    content
+    author {
+      id
+      profile {
+        id
+        avatar
+      }
+    }
+    likes {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __usePopularTweetsQuery__
+ *
+ * To run a query within a React component, call `usePopularTweetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePopularTweetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePopularTweetsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePopularTweetsQuery(baseOptions?: Apollo.QueryHookOptions<PopularTweetsQuery, PopularTweetsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PopularTweetsQuery, PopularTweetsQueryVariables>(PopularTweetsDocument, options);
+      }
+export function usePopularTweetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PopularTweetsQuery, PopularTweetsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PopularTweetsQuery, PopularTweetsQueryVariables>(PopularTweetsDocument, options);
+        }
+export type PopularTweetsQueryHookResult = ReturnType<typeof usePopularTweetsQuery>;
+export type PopularTweetsLazyQueryHookResult = ReturnType<typeof usePopularTweetsLazyQuery>;
+export type PopularTweetsQueryResult = Apollo.QueryResult<PopularTweetsQuery, PopularTweetsQueryVariables>;
 export const UsersDocument = gql`
     query users {
   users {
@@ -551,11 +713,14 @@ export const namedOperations = {
     AllTweets: 'AllTweets',
     Me: 'Me',
     MyProfile: 'MyProfile',
+    PopularTweets: 'PopularTweets',
     users: 'users'
   },
   Mutation: {
     createProfile: 'createProfile',
     CreateTweet: 'CreateTweet',
+    DeleteLike: 'DeleteLike',
+    LikeTweet: 'LikeTweet',
     Login: 'Login',
     Signup: 'Signup',
     UpdateProfile: 'UpdateProfile'

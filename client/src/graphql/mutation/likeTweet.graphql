@@ -1,0 +1,5 @@
+mutation LikeTweet ($likeTweetId: Int){
+  likeTweet(id: $likeTweetId) {
+    id
+  }
+}

@@ -6,6 +6,7 @@ import { useMyProfileQuery } from "../generated/graphql";
 import "../styles/profile.css";
 import "../styles/primary.css";
 import LeftNav from "../components/LeftNav";
+import PopularTweets from "../components/PopularTweets";
 interface Props {}
 
 const Profile = (props: Props) => {
@@ -69,7 +70,10 @@ const Profile = (props: Props) => {
             </div>
             {/* <LikedTweets tweets={data.me} /> */}
           </div>
-          <div className="right">{/* <PopularTweets/> */}</div>
+          <div className="right">
+            {" "}
+            <PopularTweets />{" "}
+          </div>
         </div>
       </>
     );

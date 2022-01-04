@@ -2,6 +2,12 @@ query MyProfile {
   me {
     id
     name
+    likedTweets {
+      id
+      tweet {
+        id
+      }
+    }
     profile {
       id
       bio

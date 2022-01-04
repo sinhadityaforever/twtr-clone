@@ -7,6 +7,8 @@ import "../styles/home.css";
 import "../styles/primary.css";
 import LeftNav from "../components/LeftNav";
 import AllTweets from "../components/AllTweets";
+import HomePageTweet from "../components/HomePageTweet";
+import PopularTweets from "../components/PopularTweets";
 interface Props {}
 
 const Home = (props: Props) => {
@@ -24,10 +26,13 @@ const Home = (props: Props) => {
           <div className="home-header">
             <h3 className="home-title">Home</h3>
           </div>
-          {/* <HomPageTweet/> */}
+          <HomePageTweet />
           <AllTweets />
         </div>
-        <div className="right">{/* <PopularTweets/> */}</div>
+        <div className="right">
+          {" "}
+          <PopularTweets />{" "}
+        </div>
       </div>
     </>
   );

@@ -2,17 +2,30 @@ import { subDays, formatDistance } from "date-fns";
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAllTweetsQuery } from "../generated/graphql";
+import { useAllTweetsQuery, useMyProfileQuery } from "../generated/graphql";
 import "../styles/allTweets.css";
+import DeleteLike from "./DeleteLike";
+import LikeTweet from "./LikeTweet";
 interface Props {}
 
 const AllTweets = (props: Props) => {
   const { data, loading, error } = useAllTweetsQuery();
+  const {
+    data: meData,
+    loading: meLoading,
+    error: meError,
+  } = useMyProfileQuery();
   if (loading) {
     return <p>Loading...</p>;
   }
   if (error) {
     return <p>{error.message}</p>;
+  }
+  if (meLoading) {
+    return <p>Loading...</p>;
+  }
+  if (meError) {
+    return <p>{meError.message}</p>;
   }
   // interface AllTweets {
   //   content: string?;
@@ -53,25 +66,28 @@ const AllTweets = (props: Props) => {
             </div>
             <p>{tweet?.content}</p>
           </Link>
-          {/* <div className="likes">
-						{meData.me.likedTweet.map((t: LikedTweets) => t.tweet.id).includes(tweet.id) ? (
-							<span>
-								<DeleteLike
-									id={
-										meData.me.likedTweet.filter(
-											(like: LikedTweets) => like.tweet.id === tweet.id
-										)[0].id
-									}
-								/>
-								{tweet.likes.length}
-							</span>
-						) : (
-							<span>
-								<LikeTweet id={tweet.id} />
-								{tweet.likes.length}
-							</span>
-						)}
-						<span style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+          <div className="likes">
+            {meData?.me?.likedTweets
+              ?.map((t) => t?.tweet?.id)
+              .includes(tweet?.id) ? (
+              <span>
+                <DeleteLike
+                  id={
+                    meData?.me?.likedTweets.filter(
+                      (like) => like?.tweet?.id === tweet?.id
+                    )[0]?.id
+                  }
+                />
+                <div>Delete</div>
+                {tweet?.likes?.length}
+              </span>
+            ) : (
+              <span>
+                <LikeTweet id={tweet?.id} />
+                {tweet?.likes?.length}
+              </span>
+            )}
+            {/* <span style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
 							<CreateComment
 								avatar={tweet.author.Profile.avatar}
 								name={tweet.author.name}
@@ -79,8 +95,8 @@ const AllTweets = (props: Props) => {
 								id={tweet.id}
 							/>
 							{tweet.comments.length > 0 ? tweet.comments.length : null}
-						</span>
-					</div> */}
+						</span> */}
+          </div>
         </div>
       ))}
     </div>

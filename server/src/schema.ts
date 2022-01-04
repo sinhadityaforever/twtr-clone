@@ -16,6 +16,7 @@ import {
 } from 'nexus'
 import { DateTimeResolver } from 'graphql-scalars'
 import { Context } from './context'
+import { prisma } from '@prisma/client'
 
 export const DateTime = asNexusMethod(DateTimeResolver, 'date')
 
@@ -149,6 +150,37 @@ const Mutation = objectType({
           token: sign({ userId: user.id }, APP_SECRET),
           user,
         }
+      },
+    })
+
+    t.field('likeTweet', {
+      type: 'LikedTweet',
+      args: {
+        id: intArg(),
+      },
+      resolve: (parent, { id }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.likedTweet.create({
+          data: {
+            tweet: { connect: { id: Number(id) } },
+            User: { connect: { id: Number(userId) } },
+          },
+        })
+      },
+    })
+
+    t.field('deleteLike', {
+      type: 'LikedTweet',
+      args: {
+        id: intArg(),
+      },
+      resolve: (parent, { id }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.likedTweet.delete({
+          where: { id: id as any },
+        })
       },
     })
 
@@ -340,6 +372,38 @@ const Profile = objectType({
   },
 })
 
+const LikedTweet = objectType({
+  name: 'LikedTweet',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.field('likedAt', { type: 'DateTime' })
+    t.field('user', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        context.prisma.likedTweet
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .User()
+      },
+    })
+    t.field('tweet', {
+      type: 'Tweet',
+      resolve: (parent, __, ctx: Context) => {
+        ctx.prisma.likedTweet
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .tweet()
+      },
+    })
+  },
+})
+
 const Tweet = objectType({
   name: 'Tweet',
   definition(t) {
@@ -357,7 +421,17 @@ const Tweet = objectType({
           })
           .author()
       },
-    })
+    }),
+      t.list.field('likes', {
+        type: 'LikedTweet',
+        resolve: (parent, _, ctx: Context) => {
+          return ctx.prisma.user
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .likedTweets()
+        },
+      })
   },
 })
 
@@ -402,6 +476,16 @@ const User = objectType({
           },
         },
       )
+    t.list.field('likedTweets', {
+      type: 'LikedTweet',
+      resolve: (parent, _, ctx: Context) => {
+        return ctx.prisma.user
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .likedTweets()
+      },
+    })
   },
 })
 
@@ -480,6 +564,7 @@ const schemaWithoutPermissions = makeSchema({
     Profile,
     Post,
     Tweet,
+    LikedTweet,
     User,
     AuthPayload,
     UserUniqueInput,

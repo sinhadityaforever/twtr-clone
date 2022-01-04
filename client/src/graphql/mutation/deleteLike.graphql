@@ -1,0 +1,5 @@
+mutation DeleteLike($deleteLikeId: Int) {
+  deleteLike(id: $deleteLikeId) {
+    id
+  }
+}
