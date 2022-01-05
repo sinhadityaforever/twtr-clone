@@ -1,0 +1,5 @@
+mutation Follow($avatar: String, $name: String, $followId: Int) {
+  follow(avatar: $avatar, name: $name, followId: $followId) {
+    id
+  }
+}

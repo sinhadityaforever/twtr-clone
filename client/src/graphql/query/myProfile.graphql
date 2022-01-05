@@ -2,6 +2,10 @@ query MyProfile {
   me {
     id
     name
+    Following {
+      id
+      followId
+    }
     likedTweets {
       id
       tweet {

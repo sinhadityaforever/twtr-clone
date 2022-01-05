@@ -33,6 +33,15 @@ export type Comment = {
   id: Scalars['Int'];
 };
 
+export type Following = {
+  __typename?: 'Following';
+  User?: Maybe<User>;
+  avatar?: Maybe<Scalars['String']>;
+  followId: Scalars['Int'];
+  id: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+};
+
 export type LikedTweet = {
   __typename?: 'LikedTweet';
   id: Scalars['Int'];
@@ -47,7 +56,9 @@ export type Mutation = {
   createProfile?: Maybe<Profile>;
   createReply?: Maybe<Comment>;
   createTweet?: Maybe<Tweet>;
+  deleteFollow?: Maybe<Following>;
   deleteLike?: Maybe<LikedTweet>;
+  follow?: Maybe<Following>;
   likeTweet?: Maybe<LikedTweet>;
   login?: Maybe<AuthPayload>;
   signup?: Maybe<AuthPayload>;
@@ -81,8 +92,20 @@ export type MutationCreateTweetArgs = {
 };
 
 
+export type MutationDeleteFollowArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type MutationDeleteLikeArgs = {
   id?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationFollowArgs = {
+  avatar?: InputMaybe<Scalars['String']>;
+  followId?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -149,6 +172,7 @@ export type Query = {
   feed: Array<Post>;
   likesNumber?: Maybe<Array<Maybe<LikedTweet>>>;
   me?: Maybe<User>;
+  singleUser?: Maybe<User>;
   tweet?: Maybe<Tweet>;
   tweets?: Maybe<Array<Maybe<Tweet>>>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -164,6 +188,11 @@ export type QueryFeedArgs = {
 
 
 export type QueryLikesNumberArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QuerySingleUserArgs = {
   id?: InputMaybe<Scalars['Int']>;
 };
 
@@ -189,6 +218,7 @@ export type Tweet = {
 
 export type User = {
   __typename?: 'User';
+  Following?: Maybe<Array<Maybe<Following>>>;
   comments?: Maybe<Array<Maybe<Comment>>>;
   email: Scalars['String'];
   id: Scalars['Int'];
@@ -251,6 +281,15 @@ export type DeleteLikeMutationVariables = Exact<{
 
 export type DeleteLikeMutation = { __typename?: 'Mutation', deleteLike?: { __typename?: 'LikedTweet', id: number } | null | undefined };
 
+export type FollowMutationVariables = Exact<{
+  avatar?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  followId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type FollowMutation = { __typename?: 'Mutation', follow?: { __typename?: 'Following', id: number } | null | undefined };
+
 export type LikeTweetMutationVariables = Exact<{
   likeTweetId?: InputMaybe<Scalars['Int']>;
 }>;
@@ -269,10 +308,18 @@ export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'A
 export type SignupMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
 }>;
 
 
 export type SignupMutation = { __typename?: 'Mutation', signup?: { __typename?: 'AuthPayload', token?: string | null | undefined } | null | undefined };
+
+export type UnfollowMutationVariables = Exact<{
+  deleteFollowId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type UnfollowMutation = { __typename?: 'Mutation', deleteFollow?: { __typename?: 'Following', id: number } | null | undefined };
 
 export type UpdateProfileMutationVariables = Exact<{
   bio?: InputMaybe<Scalars['String']>;
@@ -305,7 +352,7 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null | undefined, likedTweets?: Array<{ __typename?: 'LikedTweet', id: number, tweet?: { __typename?: 'Tweet', id: number } | null | undefined } | null | undefined> | null | undefined, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
+export type MyProfileQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null | undefined, Following?: Array<{ __typename?: 'Following', id: number, followId: number } | null | undefined> | null | undefined, likedTweets?: Array<{ __typename?: 'LikedTweet', id: number, tweet?: { __typename?: 'Tweet', id: number } | null | undefined } | null | undefined> | null | undefined, profile?: { __typename?: 'Profile', id: number, bio?: string | null | undefined, location?: string | null | undefined, website?: string | null | undefined, avatar?: string | null | undefined } | null | undefined } | null | undefined };
 
 export type PopularTweetsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -318,6 +365,13 @@ export type SingleTweetQueryVariables = Exact<{
 
 
 export type SingleTweetQuery = { __typename?: 'Query', tweet?: { __typename?: 'Tweet', id: number, content?: string | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined, comments?: Array<{ __typename?: 'Comment', id: number, content?: string | null | undefined, createdAt: any, User?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
+
+export type SingleUserQueryVariables = Exact<{
+  singleUserId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type SingleUserQuery = { __typename?: 'Query', singleUser?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined, website?: string | null | undefined } | null | undefined } | null | undefined };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -501,6 +555,41 @@ export function useDeleteLikeMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteLikeMutationHookResult = ReturnType<typeof useDeleteLikeMutation>;
 export type DeleteLikeMutationResult = Apollo.MutationResult<DeleteLikeMutation>;
 export type DeleteLikeMutationOptions = Apollo.BaseMutationOptions<DeleteLikeMutation, DeleteLikeMutationVariables>;
+export const FollowDocument = gql`
+    mutation Follow($avatar: String, $name: String, $followId: Int) {
+  follow(avatar: $avatar, name: $name, followId: $followId) {
+    id
+  }
+}
+    `;
+export type FollowMutationFn = Apollo.MutationFunction<FollowMutation, FollowMutationVariables>;
+
+/**
+ * __useFollowMutation__
+ *
+ * To run a mutation, you first call `useFollowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFollowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [followMutation, { data, loading, error }] = useFollowMutation({
+ *   variables: {
+ *      avatar: // value for 'avatar'
+ *      name: // value for 'name'
+ *      followId: // value for 'followId'
+ *   },
+ * });
+ */
+export function useFollowMutation(baseOptions?: Apollo.MutationHookOptions<FollowMutation, FollowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FollowMutation, FollowMutationVariables>(FollowDocument, options);
+      }
+export type FollowMutationHookResult = ReturnType<typeof useFollowMutation>;
+export type FollowMutationResult = Apollo.MutationResult<FollowMutation>;
+export type FollowMutationOptions = Apollo.BaseMutationOptions<FollowMutation, FollowMutationVariables>;
 export const LikeTweetDocument = gql`
     mutation LikeTweet($likeTweetId: Int) {
   likeTweet(id: $likeTweetId) {
@@ -569,8 +658,8 @@ export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const SignupDocument = gql`
-    mutation Signup($email: String!, $password: String!) {
-  signup(email: $email, password: $password) {
+    mutation Signup($email: String!, $password: String!, $name: String) {
+  signup(email: $email, password: $password, name: $name) {
     token
   }
 }
@@ -592,6 +681,7 @@ export type SignupMutationFn = Apollo.MutationFunction<SignupMutation, SignupMut
  *   variables: {
  *      email: // value for 'email'
  *      password: // value for 'password'
+ *      name: // value for 'name'
  *   },
  * });
  */
@@ -602,6 +692,39 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const UnfollowDocument = gql`
+    mutation Unfollow($deleteFollowId: Int) {
+  deleteFollow(id: $deleteFollowId) {
+    id
+  }
+}
+    `;
+export type UnfollowMutationFn = Apollo.MutationFunction<UnfollowMutation, UnfollowMutationVariables>;
+
+/**
+ * __useUnfollowMutation__
+ *
+ * To run a mutation, you first call `useUnfollowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnfollowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unfollowMutation, { data, loading, error }] = useUnfollowMutation({
+ *   variables: {
+ *      deleteFollowId: // value for 'deleteFollowId'
+ *   },
+ * });
+ */
+export function useUnfollowMutation(baseOptions?: Apollo.MutationHookOptions<UnfollowMutation, UnfollowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnfollowMutation, UnfollowMutationVariables>(UnfollowDocument, options);
+      }
+export type UnfollowMutationHookResult = ReturnType<typeof useUnfollowMutation>;
+export type UnfollowMutationResult = Apollo.MutationResult<UnfollowMutation>;
+export type UnfollowMutationOptions = Apollo.BaseMutationOptions<UnfollowMutation, UnfollowMutationVariables>;
 export const UpdateProfileDocument = gql`
     mutation UpdateProfile($bio: String, $avatar: String, $location: String, $website: String, $updateProfileId: Int) {
   updateProfile(
@@ -770,6 +893,10 @@ export const MyProfileDocument = gql`
   me {
     id
     name
+    Following {
+      id
+      followId
+    }
     likedTweets {
       id
       tweet {
@@ -916,6 +1043,47 @@ export function useSingleTweetLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type SingleTweetQueryHookResult = ReturnType<typeof useSingleTweetQuery>;
 export type SingleTweetLazyQueryHookResult = ReturnType<typeof useSingleTweetLazyQuery>;
 export type SingleTweetQueryResult = Apollo.QueryResult<SingleTweetQuery, SingleTweetQueryVariables>;
+export const SingleUserDocument = gql`
+    query SingleUser($singleUserId: Int) {
+  singleUser(id: $singleUserId) {
+    id
+    name
+    profile {
+      id
+      avatar
+      website
+    }
+  }
+}
+    `;
+
+/**
+ * __useSingleUserQuery__
+ *
+ * To run a query within a React component, call `useSingleUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSingleUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSingleUserQuery({
+ *   variables: {
+ *      singleUserId: // value for 'singleUserId'
+ *   },
+ * });
+ */
+export function useSingleUserQuery(baseOptions?: Apollo.QueryHookOptions<SingleUserQuery, SingleUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SingleUserQuery, SingleUserQueryVariables>(SingleUserDocument, options);
+      }
+export function useSingleUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SingleUserQuery, SingleUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SingleUserQuery, SingleUserQueryVariables>(SingleUserDocument, options);
+        }
+export type SingleUserQueryHookResult = ReturnType<typeof useSingleUserQuery>;
+export type SingleUserLazyQueryHookResult = ReturnType<typeof useSingleUserLazyQuery>;
+export type SingleUserQueryResult = Apollo.QueryResult<SingleUserQuery, SingleUserQueryVariables>;
 export const UsersDocument = gql`
     query users {
   users {
@@ -960,6 +1128,7 @@ export const namedOperations = {
     MyProfile: 'MyProfile',
     PopularTweets: 'PopularTweets',
     SingleTweet: 'SingleTweet',
+    SingleUser: 'SingleUser',
     users: 'users'
   },
   Mutation: {
@@ -968,9 +1137,11 @@ export const namedOperations = {
     CreateReply: 'CreateReply',
     CreateTweet: 'CreateTweet',
     DeleteLike: 'DeleteLike',
+    Follow: 'Follow',
     LikeTweet: 'LikeTweet',
     Login: 'Login',
     Signup: 'Signup',
+    Unfollow: 'Unfollow',
     UpdateProfile: 'UpdateProfile'
   }
 }

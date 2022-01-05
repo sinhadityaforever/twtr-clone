@@ -53,6 +53,17 @@ const Query = objectType({
         })
       },
     })
+    t.nullable.field('singleUser', {
+      type: 'User',
+      args: { id: intArg() },
+      resolve: (parent, { id }, context: Context) => {
+        return context.prisma.user.findUnique({
+          where: {
+            id: Number(id),
+          },
+        })
+      },
+    })
 
     // t.nullable.field('postById', {
     //   type: 'Post',
@@ -185,6 +196,41 @@ const Mutation = objectType({
       },
     })
 
+    t.field('follow', {
+      type: 'Following',
+      args: {
+        name: stringArg(),
+        followId: intArg(),
+        avatar: stringArg(),
+      },
+      resolve: (parent, { name, followId, avatar }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.following.create({
+          data: {
+            name,
+            avatar,
+            //@ts-ignore
+            followId,
+            User: { connect: { id: Number(userId) } },
+          },
+        })
+      },
+    })
+    t.field('deleteFollow', {
+      type: 'Following',
+      args: {
+        id: intArg(),
+      },
+      resolve: (parent, { id }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.following.delete({
+          //@ts-ignore
+          where: { id: id },
+        })
+      },
+    })
     t.field('createComment', {
       type: 'Comment',
       args: {
@@ -604,6 +650,21 @@ const User = objectType({
         },
       ),
       t.list.field(
+        'Following', //should match 'tweets' field of user
+        {
+          type: 'Following', //should match the schema you created in this file
+          resolve: (parent, _, ctx: Context) => {
+            return ctx.prisma.user
+              .findUnique({
+                where: {
+                  id: parent.id,
+                },
+              })
+              .Following() //should match 'tweets' field of user
+          },
+        },
+      ),
+      t.list.field(
         'comments', //should match 'tweets' field of user
         {
           type: 'Comment', //should match the schema you created in this file
@@ -626,6 +687,28 @@ const User = objectType({
             where: { id: parent.id },
           })
           .likedTweets()
+      },
+    })
+  },
+})
+
+const Following = objectType({
+  name: 'Following',
+  definition(t) {
+    t.nonNull.int('id')
+    t.string('name')
+    t.string('avatar')
+    t.nonNull.int('followId')
+    t.field('User', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        return context.prisma.following
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .User()
       },
     })
   },
@@ -705,6 +788,7 @@ const schemaWithoutPermissions = makeSchema({
     Mutation,
     Profile,
     Post,
+    Following,
     Tweet,
     LikedTweet,
     User,

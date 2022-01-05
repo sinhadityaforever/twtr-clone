@@ -1,0 +1,11 @@
+query SingleUser($singleUserId: Int) {
+  singleUser(id: $singleUserId) {
+    id
+    name
+    profile {
+      id
+      avatar
+      website
+    }
+  }
+}

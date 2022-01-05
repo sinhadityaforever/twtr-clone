@@ -16,6 +16,7 @@ import Users from "./pages/Users";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import SingleTweet from "./pages/SingleTweet";
+import SingleUser from "./pages/SingleUser";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000",
@@ -44,9 +45,9 @@ function App() {
         <Route path="signup" element={<Signup></Signup>} />
         <Route path="login" element={<Login></Login>} />
         <Route path="/tweet/:id" element={<SingleTweet></SingleTweet>} />
+        <Route path="/user/:id" element={<SingleUser></SingleUser>} />
         <Route path="/landing" element={<Landing></Landing>} />
         <Route path="/profile" element={<Profile></Profile>} />
-        {/* <Route path="users" element={<Users></Users>} /> */}
       </Routes>
     </ApolloProvider>
   );

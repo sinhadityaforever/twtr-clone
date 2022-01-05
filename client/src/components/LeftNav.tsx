@@ -9,7 +9,7 @@ interface Props {}
 const LeftNav = (props: Props) => {
   return (
     <div>
-      <Link to="/users">
+      <Link to="/">
         <img src={favicon} alt="logo" style={{ width: "40px" }} />
       </Link>
       <Link to="/">
@@ -24,19 +24,19 @@ const LeftNav = (props: Props) => {
           <span className="title">Profile</span>
         </h2>
       </Link>
-      <Link to="/users">
+      <Link to="/">
         <h2>
           <i className="fa fa-envelope" aria-hidden="true" />{" "}
           <span className="title">Messages</span>
         </h2>
       </Link>
-      <Link to="/users">
+      <Link to="/">
         <h2>
           <i className="fa fa-bell" aria-hidden="true" />{" "}
           <span className="title">Notifications</span>
         </h2>
       </Link>
-      <Link to="/users">
+      <Link to="/">
         <h2>
           <i className="fa fa-ellipsis-h" aria-hidden="true" />{" "}
           <span className="title">More</span>
