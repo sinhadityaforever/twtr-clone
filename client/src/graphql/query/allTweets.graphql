@@ -6,6 +6,10 @@ query AllTweets {
     likes {
       id
     }
+    comments {
+      content
+      id
+    }
     author {
       id
       name

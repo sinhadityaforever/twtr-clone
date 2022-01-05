@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAllTweetsQuery, useMyProfileQuery } from "../generated/graphql";
 import "../styles/allTweets.css";
+import CreateComment from "./CreateComment";
 import DeleteLike from "./DeleteLike";
 import LikeTweet from "./LikeTweet";
 interface Props {}
@@ -87,15 +88,21 @@ const AllTweets = (props: Props) => {
                 {tweet?.likes === null ? 0 : tweet?.likes?.length}
               </span>
             )}
-            {/* <span style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-							<CreateComment
-								avatar={tweet.author.Profile.avatar}
-								name={tweet.author.name}
-								tweet={tweet.content}
-								id={tweet.id}
-							/>
-							{tweet.comments.length > 0 ? tweet.comments.length : null}
-						</span> */}
+            <span style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+              <CreateComment
+                avatar={
+                  tweet?.author?.profile?.avatar
+                    ? tweet?.author?.profile?.avatar
+                    : ""
+                }
+                name={tweet?.author?.name ? tweet.author.name : ""}
+                tweet={tweet?.content ? tweet?.content : ""}
+                id={tweet?.id ? tweet?.id : 0}
+              />
+              {(tweet?.comments?.length as number) > 0
+                ? tweet?.comments?.length
+                : null}
+            </span>
           </div>
         </div>
       ))}

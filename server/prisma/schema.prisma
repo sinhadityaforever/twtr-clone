@@ -58,10 +58,13 @@ model Comment {
   createdAt DateTime @default(now())
   content   String?
 
-  User    User?  @relation(fields: [userId], references: [id])
-  userId  Int?
-  Tweet   Tweet? @relation(fields: [tweetId], references: [id])
-  tweetId Int?
+  User      User?     @relation(fields: [userId], references: [id])
+  userId    Int?
+  Tweet     Tweet?    @relation(fields: [tweetId], references: [id])
+  tweetId   Int?
+  comments  Comment[] @relation("CommentToComment")
+  Comment   Comment?  @relation("CommentToComment", fields: [commentId], references: [id])
+  commentId Int?
 }
 
 model LikedTweet {

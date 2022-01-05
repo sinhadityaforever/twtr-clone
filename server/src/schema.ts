@@ -42,6 +42,18 @@ const Query = objectType({
       },
     })
 
+    t.nullable.field('tweet', {
+      type: 'Tweet',
+      args: { id: intArg() },
+      resolve: (parent, { id }, context: Context) => {
+        return context.prisma.tweet.findUnique({
+          where: {
+            id: Number(id),
+          },
+        })
+      },
+    })
+
     // t.nullable.field('postById', {
     //   type: 'Post',
     //   args: {
@@ -187,6 +199,27 @@ const Mutation = objectType({
             content,
             User: { connect: { id: Number(userId) } },
             Tweet: { connect: { id: Number(id) } },
+          },
+        })
+      },
+    })
+
+    t.field('createReply', {
+      type: 'Comment',
+      args: {
+        content: stringArg(),
+        id: intArg(),
+        commentId: intArg(),
+      },
+      resolve: (parent, { content, id, commentId }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.comment.create({
+          data: {
+            content,
+            User: { connect: { id: Number(userId) } },
+            Tweet: { connect: { id: Number(id) } },
+            Comment: { connect: { id: Number(commentId) } },
           },
         })
       },
@@ -515,7 +548,17 @@ const Comment = objectType({
           })
           .Tweet()
       },
-    })
+    }),
+      t.list.field('Comments', {
+        type: 'Comment',
+        resolve: async (parent, _, ctx: Context) => {
+          return ctx.prisma.comment
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .comments()
+        },
+      })
   },
 })
 

@@ -8,6 +8,7 @@ type AuthPayload {
 }
 
 type Comment {
+  Comments: [Comment]
   Tweet: Tweet
   User: User
   content: String
@@ -30,6 +31,7 @@ type LikedTweet {
 type Mutation {
   createComment(content: String, id: Int): Comment
   createProfile(avatar: String, bio: String, location: String, website: String): Profile
+  createReply(commentId: Int, content: String, id: Int): Comment
   createTweet(content: String): Tweet
   deleteLike(id: Int): LikedTweet
   likeTweet(id: Int): LikedTweet
@@ -72,6 +74,7 @@ type Query {
   feed(orderBy: PostOrderByUpdatedAtInput, searchString: String, skip: Int, take: Int): [Post!]!
   likesNumber(id: Int): [LikedTweet]
   me: User
+  tweet(id: Int): Tweet
   tweets: [Tweet]
   users: [User]
 }

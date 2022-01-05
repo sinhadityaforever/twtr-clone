@@ -23,6 +23,15 @@ export type AuthPayload = {
   user?: Maybe<User>;
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  Tweet?: Maybe<Tweet>;
+  User?: Maybe<User>;
+  content?: Maybe<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['Int'];
+};
+
 export type LikedTweet = {
   __typename?: 'LikedTweet';
   id: Scalars['Int'];
@@ -33,6 +42,7 @@ export type LikedTweet = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createComment?: Maybe<Comment>;
   createProfile?: Maybe<Profile>;
   createTweet?: Maybe<Tweet>;
   deleteLike?: Maybe<LikedTweet>;
@@ -40,6 +50,12 @@ export type Mutation = {
   login?: Maybe<AuthPayload>;
   signup?: Maybe<AuthPayload>;
   updateProfile?: Maybe<Profile>;
+};
+
+
+export type MutationCreateCommentArgs = {
+  content?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -124,6 +140,7 @@ export type Query = {
   feed: Array<Post>;
   likesNumber?: Maybe<Array<Maybe<LikedTweet>>>;
   me?: Maybe<User>;
+  tweet?: Maybe<Tweet>;
   tweets?: Maybe<Array<Maybe<Tweet>>>;
   users?: Maybe<Array<Maybe<User>>>;
 };
@@ -141,6 +158,11 @@ export type QueryLikesNumberArgs = {
   id?: InputMaybe<Scalars['Int']>;
 };
 
+
+export type QueryTweetArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+};
+
 export enum SortOrder {
   Asc = 'asc',
   Desc = 'desc'
@@ -149,6 +171,7 @@ export enum SortOrder {
 export type Tweet = {
   __typename?: 'Tweet';
   author?: Maybe<User>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
   content?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['Int'];
@@ -157,6 +180,7 @@ export type Tweet = {
 
 export type User = {
   __typename?: 'User';
+  comments?: Maybe<Array<Maybe<Comment>>>;
   email: Scalars['String'];
   id: Scalars['Int'];
   likedTweets?: Maybe<Array<Maybe<LikedTweet>>>;
@@ -176,6 +200,14 @@ export type UserUniqueInput = {
   email?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
 };
+
+export type CreateCommentMutationVariables = Exact<{
+  content?: InputMaybe<Scalars['String']>;
+  createCommentId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment?: { __typename?: 'Comment', id: number } | null | undefined };
 
 export type CreateProfileMutationVariables = Exact<{
   bio?: InputMaybe<Scalars['String']>;
@@ -238,7 +270,7 @@ export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: {
 export type AllTweetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
+export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined, comments?: Array<{ __typename?: 'Comment', content?: string | null | undefined, id: number } | null | undefined> | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
 
 export type LikesNumberQueryVariables = Exact<{
   likesNumberId?: InputMaybe<Scalars['Int']>;
@@ -262,12 +294,53 @@ export type PopularTweetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type PopularTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, author?: { __typename?: 'User', id: number, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined } | null | undefined> | null | undefined };
 
+export type SingleTweetQueryVariables = Exact<{
+  tweetId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type SingleTweetQuery = { __typename?: 'Query', tweet?: { __typename?: 'Tweet', id: number, content?: string | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined, comments?: Array<{ __typename?: 'Comment', id: number, content?: string | null | undefined, createdAt: any, User?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
+
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', name?: string | null | undefined, email: string, id: number } | null | undefined> | null | undefined };
 
 
+export const CreateCommentDocument = gql`
+    mutation CreateComment($content: String, $createCommentId: Int) {
+  createComment(content: $content, id: $createCommentId) {
+    id
+  }
+}
+    `;
+export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;
+
+/**
+ * __useCreateCommentMutation__
+ *
+ * To run a mutation, you first call `useCreateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCommentMutation, { data, loading, error }] = useCreateCommentMutation({
+ *   variables: {
+ *      content: // value for 'content'
+ *      createCommentId: // value for 'createCommentId'
+ *   },
+ * });
+ */
+export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateCommentMutation, CreateCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument, options);
+      }
+export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
+export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
+export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const CreateProfileDocument = gql`
     mutation createProfile($bio: String, $location: String, $avatar: String, $website: String) {
   createProfile(
@@ -528,6 +601,10 @@ export const AllTweetsDocument = gql`
     likes {
       id
     }
+    comments {
+      content
+      id
+    }
     author {
       id
       name
@@ -729,6 +806,63 @@ export function usePopularTweetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type PopularTweetsQueryHookResult = ReturnType<typeof usePopularTweetsQuery>;
 export type PopularTweetsLazyQueryHookResult = ReturnType<typeof usePopularTweetsLazyQuery>;
 export type PopularTweetsQueryResult = Apollo.QueryResult<PopularTweetsQuery, PopularTweetsQueryVariables>;
+export const SingleTweetDocument = gql`
+    query SingleTweet($tweetId: Int) {
+  tweet(id: $tweetId) {
+    id
+    content
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+    comments {
+      id
+      content
+      createdAt
+      User {
+        id
+        name
+        profile {
+          id
+          avatar
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSingleTweetQuery__
+ *
+ * To run a query within a React component, call `useSingleTweetQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSingleTweetQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSingleTweetQuery({
+ *   variables: {
+ *      tweetId: // value for 'tweetId'
+ *   },
+ * });
+ */
+export function useSingleTweetQuery(baseOptions?: Apollo.QueryHookOptions<SingleTweetQuery, SingleTweetQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SingleTweetQuery, SingleTweetQueryVariables>(SingleTweetDocument, options);
+      }
+export function useSingleTweetLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SingleTweetQuery, SingleTweetQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SingleTweetQuery, SingleTweetQueryVariables>(SingleTweetDocument, options);
+        }
+export type SingleTweetQueryHookResult = ReturnType<typeof useSingleTweetQuery>;
+export type SingleTweetLazyQueryHookResult = ReturnType<typeof useSingleTweetLazyQuery>;
+export type SingleTweetQueryResult = Apollo.QueryResult<SingleTweetQuery, SingleTweetQueryVariables>;
 export const UsersDocument = gql`
     query users {
   users {
@@ -772,9 +906,11 @@ export const namedOperations = {
     Me: 'Me',
     MyProfile: 'MyProfile',
     PopularTweets: 'PopularTweets',
+    SingleTweet: 'SingleTweet',
     users: 'users'
   },
   Mutation: {
+    CreateComment: 'CreateComment',
     createProfile: 'createProfile',
     CreateTweet: 'CreateTweet',
     DeleteLike: 'DeleteLike',

@@ -1,0 +1,27 @@
+query SingleTweet($tweetId: Int) {
+  tweet(id: $tweetId) {
+    id
+    content
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+    comments {
+      id
+      content
+      createdAt
+      User {
+        id
+        name
+        profile {
+          id
+          avatar
+        }
+      }
+    }
+  }
+}
