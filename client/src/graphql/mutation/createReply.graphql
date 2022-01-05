@@ -1,0 +1,5 @@
+mutation CreateReply($content: String, $commentId: Int, $createReplyId: Int) {
+  createReply(content: $content, commentId: $commentId, id: $createReplyId) {
+    id
+  }
+}

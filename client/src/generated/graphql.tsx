@@ -25,6 +25,7 @@ export type AuthPayload = {
 
 export type Comment = {
   __typename?: 'Comment';
+  Comments?: Maybe<Array<Maybe<Comment>>>;
   Tweet?: Maybe<Tweet>;
   User?: Maybe<User>;
   content?: Maybe<Scalars['String']>;
@@ -44,6 +45,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createComment?: Maybe<Comment>;
   createProfile?: Maybe<Profile>;
+  createReply?: Maybe<Comment>;
   createTweet?: Maybe<Tweet>;
   deleteLike?: Maybe<LikedTweet>;
   likeTweet?: Maybe<LikedTweet>;
@@ -64,6 +66,13 @@ export type MutationCreateProfileArgs = {
   bio?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   website?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateReplyArgs = {
+  commentId?: InputMaybe<Scalars['Int']>;
+  content?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -218,6 +227,15 @@ export type CreateProfileMutationVariables = Exact<{
 
 
 export type CreateProfileMutation = { __typename?: 'Mutation', createProfile?: { __typename?: 'Profile', id: number } | null | undefined };
+
+export type CreateReplyMutationVariables = Exact<{
+  content?: InputMaybe<Scalars['String']>;
+  commentId?: InputMaybe<Scalars['Int']>;
+  createReplyId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type CreateReplyMutation = { __typename?: 'Mutation', createReply?: { __typename?: 'Comment', id: number } | null | undefined };
 
 export type CreateTweetMutationVariables = Exact<{
   content?: InputMaybe<Scalars['String']>;
@@ -382,6 +400,41 @@ export function useCreateProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateProfileMutationHookResult = ReturnType<typeof useCreateProfileMutation>;
 export type CreateProfileMutationResult = Apollo.MutationResult<CreateProfileMutation>;
 export type CreateProfileMutationOptions = Apollo.BaseMutationOptions<CreateProfileMutation, CreateProfileMutationVariables>;
+export const CreateReplyDocument = gql`
+    mutation CreateReply($content: String, $commentId: Int, $createReplyId: Int) {
+  createReply(content: $content, commentId: $commentId, id: $createReplyId) {
+    id
+  }
+}
+    `;
+export type CreateReplyMutationFn = Apollo.MutationFunction<CreateReplyMutation, CreateReplyMutationVariables>;
+
+/**
+ * __useCreateReplyMutation__
+ *
+ * To run a mutation, you first call `useCreateReplyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReplyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createReplyMutation, { data, loading, error }] = useCreateReplyMutation({
+ *   variables: {
+ *      content: // value for 'content'
+ *      commentId: // value for 'commentId'
+ *      createReplyId: // value for 'createReplyId'
+ *   },
+ * });
+ */
+export function useCreateReplyMutation(baseOptions?: Apollo.MutationHookOptions<CreateReplyMutation, CreateReplyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateReplyMutation, CreateReplyMutationVariables>(CreateReplyDocument, options);
+      }
+export type CreateReplyMutationHookResult = ReturnType<typeof useCreateReplyMutation>;
+export type CreateReplyMutationResult = Apollo.MutationResult<CreateReplyMutation>;
+export type CreateReplyMutationOptions = Apollo.BaseMutationOptions<CreateReplyMutation, CreateReplyMutationVariables>;
 export const CreateTweetDocument = gql`
     mutation CreateTweet($content: String) {
   createTweet(content: $content) {
@@ -912,6 +965,7 @@ export const namedOperations = {
   Mutation: {
     CreateComment: 'CreateComment',
     createProfile: 'createProfile',
+    CreateReply: 'CreateReply',
     CreateTweet: 'CreateTweet',
     DeleteLike: 'DeleteLike',
     LikeTweet: 'LikeTweet',

@@ -8,6 +8,7 @@ import "../styles/primary.css";
 import LeftNav from "../components/LeftNav";
 
 import PopularTweets from "../components/PopularTweets";
+import CreateReply from "../components/CreateReply";
 interface Props {}
 
 const SingleTweet = (props: Props) => {
@@ -85,7 +86,17 @@ const SingleTweet = (props: Props) => {
                 <h5>{comment?.User?.name}</h5>
               </div>
               <p>{comment?.content}</p>
-              {/* <CreateReply name={comment.User.name} avatar={comment.User.Profile.avatar} id={data.tweet.id} comment={comment.content} commentId={comment.id}/> */}
+              <CreateReply
+                name={comment?.User?.name ? comment?.User?.name : ""}
+                avatar={
+                  comment?.User?.profile?.avatar
+                    ? comment?.User?.profile?.avatar
+                    : ""
+                }
+                id={data?.tweet?.id ? data?.tweet?.id : 0}
+                comment={comment?.content ? comment?.content : ""}
+                commentId={comment?.id ? comment?.id : 0}
+              />
             </>
           ))}
         </div>

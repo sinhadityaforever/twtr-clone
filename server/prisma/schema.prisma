@@ -17,6 +17,7 @@ model User {
   tweets      Tweet[]
   likedTweets LikedTweet[]
   comments    Comment[]
+  Fokkiwing   Following[]
 }
 
 model Post {
@@ -74,4 +75,14 @@ model LikedTweet {
   userId  Int?
   User    User?    @relation(fields: [userId], references: [id])
   tweetId Int
+}
+
+model Following {
+  id       Int    @id @default(autoincrement())
+  name     String
+  avatar   String
+  followId Int
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
