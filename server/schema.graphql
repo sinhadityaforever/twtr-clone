@@ -7,6 +7,14 @@ type AuthPayload {
   user: User
 }
 
+type Comment {
+  Tweet: Tweet
+  User: User
+  content: String
+  createdAt: DateTime!
+  id: Int!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -20,6 +28,7 @@ type LikedTweet {
 }
 
 type Mutation {
+  createComment(content: String, id: Int): Comment
   createProfile(avatar: String, bio: String, location: String, website: String): Profile
   createTweet(content: String): Tweet
   deleteLike(id: Int): LikedTweet
@@ -60,6 +69,8 @@ type Profile {
 }
 
 type Query {
+  feed(orderBy: PostOrderByUpdatedAtInput, searchString: String, skip: Int, take: Int): [Post!]!
+  likesNumber(id: Int): [LikedTweet]
   me: User
   tweets: [Tweet]
   users: [User]
@@ -72,6 +83,7 @@ enum SortOrder {
 
 type Tweet {
   author: User
+  comments: [Comment]
   content: String
   createdAt: DateTime!
   id: Int!
@@ -79,6 +91,7 @@ type Tweet {
 }
 
 type User {
+  comments: [Comment]
   email: String!
   id: Int!
   likedTweets: [LikedTweet]

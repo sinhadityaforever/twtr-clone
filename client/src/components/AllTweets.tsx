@@ -78,13 +78,13 @@ const AllTweets = (props: Props) => {
                     )[0]?.id
                   }
                 />
-                <div>Delete</div>
-                {tweet?.likes?.length}
+
+                {tweet?.likes === null ? 0 : tweet?.likes?.length}
               </span>
             ) : (
               <span>
                 <LikeTweet id={tweet?.id} />
-                {tweet?.likes?.length}
+                {tweet?.likes === null ? 0 : tweet?.likes?.length}
               </span>
             )}
             {/* <span style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>

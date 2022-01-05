@@ -121,9 +121,24 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  feed: Array<Post>;
+  likesNumber?: Maybe<Array<Maybe<LikedTweet>>>;
   me?: Maybe<User>;
   tweets?: Maybe<Array<Maybe<Tweet>>>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryFeedArgs = {
+  orderBy?: InputMaybe<PostOrderByUpdatedAtInput>;
+  searchString?: InputMaybe<Scalars['String']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryLikesNumberArgs = {
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 export enum SortOrder {
@@ -224,6 +239,13 @@ export type AllTweetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AllTweetsQuery = { __typename?: 'Query', tweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
+
+export type LikesNumberQueryVariables = Exact<{
+  likesNumberId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type LikesNumberQuery = { __typename?: 'Query', likesNumber?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -544,6 +566,41 @@ export function useAllTweetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type AllTweetsQueryHookResult = ReturnType<typeof useAllTweetsQuery>;
 export type AllTweetsLazyQueryHookResult = ReturnType<typeof useAllTweetsLazyQuery>;
 export type AllTweetsQueryResult = Apollo.QueryResult<AllTweetsQuery, AllTweetsQueryVariables>;
+export const LikesNumberDocument = gql`
+    query likesNumber($likesNumberId: Int) {
+  likesNumber(id: $likesNumberId) {
+    id
+  }
+}
+    `;
+
+/**
+ * __useLikesNumberQuery__
+ *
+ * To run a query within a React component, call `useLikesNumberQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLikesNumberQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLikesNumberQuery({
+ *   variables: {
+ *      likesNumberId: // value for 'likesNumberId'
+ *   },
+ * });
+ */
+export function useLikesNumberQuery(baseOptions?: Apollo.QueryHookOptions<LikesNumberQuery, LikesNumberQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LikesNumberQuery, LikesNumberQueryVariables>(LikesNumberDocument, options);
+      }
+export function useLikesNumberLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LikesNumberQuery, LikesNumberQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LikesNumberQuery, LikesNumberQueryVariables>(LikesNumberDocument, options);
+        }
+export type LikesNumberQueryHookResult = ReturnType<typeof useLikesNumberQuery>;
+export type LikesNumberLazyQueryHookResult = ReturnType<typeof useLikesNumberLazyQuery>;
+export type LikesNumberQueryResult = Apollo.QueryResult<LikesNumberQuery, LikesNumberQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -711,6 +768,7 @@ export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariable
 export const namedOperations = {
   Query: {
     AllTweets: 'AllTweets',
+    likesNumber: 'likesNumber',
     Me: 'Me',
     MyProfile: 'MyProfile',
     PopularTweets: 'PopularTweets',

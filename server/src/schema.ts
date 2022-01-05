@@ -54,37 +54,37 @@ const Query = objectType({
     //   },
     // })
 
-    // t.nonNull.list.nonNull.field('feed', {
-    //   type: 'Post',
-    //   args: {
-    //     searchString: stringArg(),
-    //     skip: intArg(),
-    //     take: intArg(),
-    //     orderBy: arg({
-    //       type: 'PostOrderByUpdatedAtInput',
-    //     }),
-    //   },
-    //   resolve: (_parent, args, context: Context) => {
-    //     const or = args.searchString
-    //       ? {
-    //           OR: [
-    //             { title: { contains: args.searchString } },
-    //             { content: { contains: args.searchString } },
-    //           ],
-    //         }
-    //       : {}
+    t.nonNull.list.nonNull.field('feed', {
+      type: 'Post',
+      args: {
+        searchString: stringArg(),
+        skip: intArg(),
+        take: intArg(),
+        orderBy: arg({
+          type: 'PostOrderByUpdatedAtInput',
+        }),
+      },
+      resolve: (_parent, args, context: Context) => {
+        const or = args.searchString
+          ? {
+              OR: [
+                { title: { contains: args.searchString } },
+                { content: { contains: args.searchString } },
+              ],
+            }
+          : {}
 
-    //     return context.prisma.post.findMany({
-    //       where: {
-    //         published: true,
-    //         ...or,
-    //       },
-    //       take: args.take || undefined,
-    //       skip: args.skip || undefined,
-    //       orderBy: args.orderBy || undefined,
-    //     })
-    //   },
-    // })
+        return context.prisma.post.findMany({
+          where: {
+            published: true,
+            ...or,
+          },
+          take: args.take || undefined,
+          skip: args.skip || undefined,
+          orderBy: args.orderBy || undefined,
+        })
+      },
+    })
 
     t.list.field('users', {
       type: 'User',
@@ -95,10 +95,30 @@ const Query = objectType({
 
     t.list.field('tweets', {
       type: 'Tweet',
-      resolve: (parent, args, ctx) => {
+      resolve: async (parent, args, ctx) => {
+        const tweet = await ctx.prisma.tweet.findMany()
+
         return ctx.prisma.tweet.findMany()
       },
     })
+
+    t.list.field(
+      'likesNumber',
+
+      {
+        type: 'LikedTweet',
+        args: {
+          id: intArg(),
+        },
+        resolve: (parent, { id }, ctx: Context) => {
+          return ctx.prisma.likedTweet.findMany({
+            where: {
+              tweetId: Number(id),
+            },
+          })
+        },
+      },
+    )
 
     // t.list.field('draftsByUser', {
     //   type: 'Post',
@@ -153,6 +173,25 @@ const Mutation = objectType({
       },
     })
 
+    t.field('createComment', {
+      type: 'Comment',
+      args: {
+        content: stringArg(),
+        id: intArg(),
+      },
+      resolve: (parent, { content, id }, ctx) => {
+        const userId = getUserId(ctx)
+        if (!userId) throw new Error('Could not authenticate user.')
+        return ctx.prisma.comment.create({
+          data: {
+            content,
+            User: { connect: { id: Number(userId) } },
+            Tweet: { connect: { id: Number(id) } },
+          },
+        })
+      },
+    })
+
     t.field('likeTweet', {
       type: 'LikedTweet',
       args: {
@@ -175,9 +214,10 @@ const Mutation = objectType({
       args: {
         id: intArg(),
       },
-      resolve: (parent, { id }, ctx) => {
+      resolve: async (parent, { id }, ctx) => {
         const userId = getUserId(ctx)
         if (!userId) throw new Error('Could not authenticate user.')
+
         return ctx.prisma.likedTweet.delete({
           where: { id: id as any },
         })
@@ -379,27 +419,25 @@ const LikedTweet = objectType({
     t.nonNull.field('likedAt', { type: 'DateTime' })
     t.field('user', {
       type: 'User',
-      resolve: (parent, _, context) => {
+      resolve: (parent, _, context) =>
         context.prisma.likedTweet
           .findUnique({
             where: {
               id: parent.id || undefined,
             },
           })
-          .User()
-      },
+          .User(),
     })
     t.field('tweet', {
       type: 'Tweet',
-      resolve: (parent, __, ctx: Context) => {
+      resolve: (parent, __, ctx: Context) =>
         ctx.prisma.likedTweet
           .findUnique({
             where: {
               id: parent.id || undefined,
             },
           })
-          .tweet()
-      },
+          .tweet(),
     })
   },
 })
@@ -421,17 +459,63 @@ const Tweet = objectType({
           })
           .author()
       },
-    }),
-      t.list.field('likes', {
-        type: 'LikedTweet',
+    })
+    t.list.field(
+      'comments', //should match 'tweets' field of user
+      {
+        type: 'Comment', //should match the schema you created in this file
         resolve: (parent, _, ctx: Context) => {
-          return ctx.prisma.user
+          return ctx.prisma.tweet
             .findUnique({
-              where: { id: parent.id },
+              where: {
+                id: parent.id,
+              },
             })
-            .likedTweets()
+            .comments() //should match 'tweets' field of user
         },
-      })
+      },
+    )
+    t.list.field('likes', {
+      type: 'LikedTweet',
+      resolve: async (parent, _, ctx: Context) => {
+        return ctx.prisma.tweet
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .likes()
+      },
+    })
+  },
+})
+
+const Comment = objectType({
+  name: 'Comment',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.field('createdAt', { type: 'DateTime' })
+    t.string('content')
+    t.field('User', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        return context.prisma.comment
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .User()
+      },
+    })
+    t.field('Tweet', {
+      type: 'Tweet',
+      resolve: async (parent, _, ctx: Context) => {
+        return ctx.prisma.comment
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .Tweet()
+      },
+    })
   },
 })
 
@@ -473,6 +557,21 @@ const User = objectType({
                 },
               })
               .tweets() //should match 'tweets' field of user
+          },
+        },
+      ),
+      t.list.field(
+        'comments', //should match 'tweets' field of user
+        {
+          type: 'Comment', //should match the schema you created in this file
+          resolve: (parent, _, ctx: Context) => {
+            return ctx.prisma.user
+              .findUnique({
+                where: {
+                  id: parent.id,
+                },
+              })
+              .comments() //should match 'tweets' field of user
           },
         },
       )
@@ -566,6 +665,7 @@ const schemaWithoutPermissions = makeSchema({
     Tweet,
     LikedTweet,
     User,
+    Comment,
     AuthPayload,
     UserUniqueInput,
     UserCreateInput,
