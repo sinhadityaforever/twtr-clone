@@ -1,6 +1,6 @@
-import { subDays, formatDistance } from "date-fns";
-
+import { formatDistance, subDays } from "date-fns";
 import React from "react";
+import ContentLoader, { Facebook, Instagram } from "react-content-loader";
 import { Link } from "react-router-dom";
 import { useAllTweetsQuery, useMyProfileQuery } from "../generated/graphql";
 import "../styles/allTweets.css";
@@ -17,13 +17,25 @@ const AllTweets = (props: Props) => {
     error: meError,
   } = useMyProfileQuery();
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div>
+        <ContentLoader />
+        <ContentLoader />
+        <ContentLoader />
+      </div>
+    );
   }
   if (error) {
     return <p>{error.message}</p>;
   }
   if (meLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div>
+        <ContentLoader />
+        <ContentLoader />
+        <ContentLoader />
+      </div>
+    );
   }
   if (meError) {
     return <p>{meError.message}</p>;

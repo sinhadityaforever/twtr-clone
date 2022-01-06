@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import React from "react";
+import ContentLoader from "react-content-loader";
 import { usePopularTweetsQuery } from "../generated/graphql";
 import "../styles/popularTweets.css";
 
@@ -7,7 +8,15 @@ interface Props {}
 
 const PopularTweets = (props: Props) => {
   const { data, loading, error } = usePopularTweetsQuery();
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div>
+        <ContentLoader />
+        <ContentLoader />
+        <ContentLoader />
+      </div>
+    );
+  }
   if (error) return <p>{error.message}</p>;
 
   const getPopularTweets = data?.tweets

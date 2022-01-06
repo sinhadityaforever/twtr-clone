@@ -1,15 +1,17 @@
 import * as React from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useSignupMutation } from "../generated/graphql";
+import { useMeQuery, useSignupMutation } from "../generated/graphql";
 import { Link, useNavigate } from "react-router-dom";
 import TwitterLogo from "../assets/twitter-logo.png";
 import "../styles/login.css";
+import favicon from "../assets/twitter-logo.png";
 interface ISignupProps {}
 
 const Signup: React.FunctionComponent<ISignupProps> = (props) => {
   const navigate = useNavigate();
   const [signupMutation, { data, loading, error }] = useSignupMutation();
+  const { data: meData, loading: meLoading, error: meError } = useMeQuery();
   const initialValues = {
     email: "",
     password: "",
@@ -32,6 +34,25 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
       .max(15, "Must be 15 characters or less")
       .required("Name Required"),
   });
+
+  if (meLoading) {
+    return (
+      <div>
+        <img
+          src={favicon}
+          style={{
+            height: "10rem",
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+          }}
+        ></img>
+      </div>
+    );
+  }
+  if (meData) {
+    navigate("/");
+  }
 
   return (
     <div className="container">

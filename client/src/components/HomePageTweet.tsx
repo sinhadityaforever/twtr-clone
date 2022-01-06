@@ -3,11 +3,14 @@ import React, { useState } from "react";
 import { customStyles } from "../styles/CustomModalStyles";
 import Modal from "react-modal";
 import * as Yup from "yup";
+import ReactLoading from "react-loading";
 import "../styles/tweet.css";
 import { namedOperations, useCreateTweetMutation } from "../generated/graphql";
+import { useNavigate } from "react-router-dom";
 const HomePageTweet = () => {
   const [createTweetMutation, { data, loading, error }] =
     useCreateTweetMutation();
+  const navigate = useNavigate();
   const initialValues = {
     content: "",
   };
@@ -33,6 +36,7 @@ const HomePageTweet = () => {
           });
 
           setSubmitting(false);
+          navigate(0);
         }}
       >
         <Form>
@@ -44,9 +48,13 @@ const HomePageTweet = () => {
           />
           <ErrorMessage name="content" component={"div"} />
 
-          <button type="submit" className="home-tweet-button">
-            <span>Tweet</span>
-          </button>
+          {loading ? (
+            <ReactLoading type="bubbles" color="#55ADEE"></ReactLoading>
+          ) : (
+            <button type="submit" className="home-tweet-button">
+              <span>Tweet</span>
+            </button>
+          )}
         </Form>
       </Formik>
       <div className="footer"></div>
