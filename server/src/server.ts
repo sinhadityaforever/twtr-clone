@@ -1,10 +1,23 @@
 import { ApolloServer } from 'apollo-server'
+import cors from 'cors'
+import express from 'express'
 import { createContext } from './context'
 import { schema } from './schema'
+
+const app = express()
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  }),
+)
 
 const server = new ApolloServer({
   schema,
   context: createContext,
+  cors: {
+    origin: 'https://twitter-clonefrontend.vercel.app',
+  },
 })
 
 server.listen().then(({ url }) =>

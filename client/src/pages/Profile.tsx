@@ -70,7 +70,7 @@ const Profile = (props: Props) => {
             </div>
             {/* <LikedTweets tweets={data.me} /> */}
           </div>
-          <div className="right">
+          <div className="Xright">
             {" "}
             <PopularTweets />{" "}
           </div>

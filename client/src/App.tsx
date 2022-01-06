@@ -19,7 +19,7 @@ import SingleTweet from "./pages/SingleTweet";
 import SingleUser from "./pages/SingleUser";
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000",
+  uri: "https://twtrclone.herokuapp.com/",
 });
 const authLink = setContext(async (req, { headers }) => {
   const token = localStorage.getItem("token");
