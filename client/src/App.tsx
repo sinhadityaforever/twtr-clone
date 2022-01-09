@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import SingleTweet from "./pages/SingleTweet";
 import SingleUser from "./pages/SingleUser";
+import Error from "./pages/Error";
 
 const httpLink = new HttpLink({
   uri: "https://twtrclone.herokuapp.com/",
@@ -41,6 +42,7 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Routes>
+        <Route path="*" element={<Error />} />
         <Route path="/" element={<Home></Home>}></Route>
         <Route path="signup" element={<Signup></Signup>} />
         <Route path="login" element={<Login></Login>} />

@@ -15,6 +15,11 @@
 .main .right {
   width: 50%;
 }
+@media (max-width: 768px) {
+  .left {
+    display: none !important;
+  }
+}
 
 .main .left {
   background: var(--main-color);

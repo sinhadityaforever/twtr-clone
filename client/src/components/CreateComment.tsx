@@ -53,7 +53,7 @@ const CreateComment = ({ tweet, avatar, name, id }: Props) => {
   };
   return (
     <div>
-      <span onClick={openModal}>
+      <span onClick={openModal} style={{ cursor: "pointer" }}>
         <i className="far fa-comment" aria-hidden="true" />
       </span>
 

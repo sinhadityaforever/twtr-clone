@@ -50,3 +50,9 @@ textarea:focus {
   margin-top: 10px;
   margin-bottom: 20px;
 }
+
+@media (max-width: 768px) {
+  .home-page-tweet {
+    display: none;
+  }
+}

@@ -7,6 +7,7 @@ import "../styles/profile.css";
 import "../styles/primary.css";
 import LeftNav from "../components/LeftNav";
 import PopularTweets from "../components/PopularTweets";
+import UserTweets from "../components/UserTweets";
 interface Props {}
 
 const Profile = (props: Props) => {
@@ -28,7 +29,11 @@ const Profile = (props: Props) => {
           <div className="profile">
             <div className="profile-info">
               <div className="profile-head">
-                <span className="back-arrow" onClick={() => navigate(-1)}>
+                <span
+                  style={{ cursor: "pointer" }}
+                  className="back-arrow"
+                  onClick={() => navigate(-1)}
+                >
                   <i className="fa fa-arrow-left" aria-hidden="true"></i>
                 </span>
                 <span className="nickname">
@@ -68,9 +73,9 @@ const Profile = (props: Props) => {
                 <p>384 followers</p>
               </div>
             </div>
-            {/* <LikedTweets tweets={data.me} /> */}
+            <UserTweets userId={data?.me?.id as number}></UserTweets>
           </div>
-          <div className="Xright">
+          <div className="right">
             {" "}
             <PopularTweets />{" "}
           </div>

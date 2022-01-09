@@ -11,6 +11,13 @@
     margin-left: 0px;
   }
 }
+
+@media (max-width: 768px) {
+  .primary {
+    display: block;
+    margin: 0 0.5rem;
+  }
+}
 /* @media only screen and (max-width: 1200px) {
         grid-template-columns: 1fr 5fr;
     } */
@@ -18,6 +25,7 @@
   grid-column: 1 / 2;
   /* margin-top: 20px; */
   /* margin-left: 40px; */
+  /* position: fixed; */
   @media only screen and (max-width: 600px) {
     margin-left: 0;
     grid-column: 1;

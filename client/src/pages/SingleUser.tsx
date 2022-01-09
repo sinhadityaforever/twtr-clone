@@ -10,6 +10,7 @@ import PopularTweets from "../components/PopularTweets";
 import { FollowUser } from "../components/FollowUser";
 import UnfollowUser from "../components/UnfollowUser";
 import ContentLoader from "react-content-loader";
+import UserTweets from "../components/UserTweets";
 interface Props {}
 
 const SingleUser = (props: Props) => {
@@ -55,7 +56,11 @@ const SingleUser = (props: Props) => {
             <div className="profile">
               <div className="profile-info">
                 <div className="profile-head">
-                  <span className="back-arrow" onClick={() => navigate(-1)}>
+                  <span
+                    style={{ cursor: "pointer" }}
+                    className="back-arrow"
+                    onClick={() => navigate(-1)}
+                  >
                     <i className="fa fa-arrow-left" aria-hidden="true"></i>
                   </span>
                   <span className="nickname">
@@ -106,8 +111,10 @@ const SingleUser = (props: Props) => {
                   <p>384 followers</p>
                 </div>
               </div>
+              <UserTweets userId={parseInt(id as string)}></UserTweets>
             </div>
           )}
+
           <div className="right">
             <PopularTweets />
           </div>

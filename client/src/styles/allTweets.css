@@ -4,6 +4,12 @@
   margin-left: 10px;
 }
 
+@media (max-width: 768px) {
+  .tweet-header {
+    grid-template-columns: 0.5fr 0.5fr 3.5fr;
+  }
+}
+
 .tweet-container {
   border-bottom: 1px solid var(--accent);
   margin-top: 10px;
@@ -27,4 +33,9 @@ p {
   grid-template-columns: 1fr 1fr 10fr;
   margin-left: 10px;
   margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+  .likes {
+    grid-template-columns: 1fr 1fr 6fr;
+  }
 }

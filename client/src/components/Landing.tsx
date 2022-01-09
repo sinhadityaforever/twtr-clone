@@ -37,7 +37,7 @@ function Landing() {
             <br />
             the world right now
           </h1>
-          <span>Join Twitter Today.</span>
+          <span style={{ fontWeight: "700" }}>Join Twitter Today.</span>
           <Link to="/signup" className="btn-sign-up">
             Sign up
           </Link>

@@ -87,6 +87,7 @@ type Query {
   singleUser(id: Int): User
   tweet(id: Int): Tweet
   tweets: [Tweet]
+  userTweets(userId: Int): [Tweet]
   users: [User]
 }
 

@@ -37,14 +37,18 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
 
   if (meLoading) {
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "50vh",
+        }}
+      >
         <img
           src={favicon}
           style={{
             height: "10rem",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
           }}
         ></img>
       </div>
@@ -83,9 +87,9 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
         <Form>
           <Field name="email" type="text" placeholder="Email" />
           <ErrorMessage name="email" component={"div"} />
-          <Field name="name" type="text" placeholder="name" />
+          <Field name="name" type="text" placeholder="Name" />
           <ErrorMessage name="name" component={"div"} />
-          <Field name="password" type="password" placeholder="password" />
+          <Field name="password" type="password" placeholder="Password" />
           <ErrorMessage name="password" component={"div"} />
           <Field
             name="Confirm password"
@@ -93,14 +97,23 @@ const Signup: React.FunctionComponent<ISignupProps> = (props) => {
             placeholder="Confirm password"
           />
           <ErrorMessage name="Confirm password" component={"div"} />
-          <button type="submit" className="login-button">
+          <button type="submit" className="login-button" color="#55ADEE">
             <span>Sign up</span>
           </button>
         </Form>
       </Formik>
       <div className="register">
         <h4>Already have an account?</h4>
-        <Link to="/login">Log in</Link>
+
+        <Link to="/login">
+          {" "}
+          <button
+            style={{ backgroundColor: "#228dcf" }}
+            className="login-button"
+          >
+            Login
+          </button>
+        </Link>
       </div>
     </div>
   );

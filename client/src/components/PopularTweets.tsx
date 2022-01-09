@@ -36,7 +36,7 @@ const PopularTweets = (props: Props) => {
                 src={
                   tweet?.author?.profile?.avatar
                     ? tweet?.author?.profile?.avatar
-                    : ""
+                    : "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
                 }
                 style={{ width: "40px", borderRadius: "50%" }}
                 alt="avatar"
@@ -46,13 +46,6 @@ const PopularTweets = (props: Props) => {
             <p className="date">
               {format(new Date(tweet?.createdAt), "MM/dd/yy")}
             </p>
-          </div>
-          <div className="tweet-likes">
-            {(tweet?.likes?.length as number) > 0 ? (
-              <span>Likes {tweet?.likes?.length}</span>
-            ) : (
-              <div></div>
-            )}
           </div>
         </div>
       ))}

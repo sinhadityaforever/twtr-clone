@@ -175,6 +175,7 @@ export type Query = {
   singleUser?: Maybe<User>;
   tweet?: Maybe<Tweet>;
   tweets?: Maybe<Array<Maybe<Tweet>>>;
+  userTweets?: Maybe<Array<Maybe<Tweet>>>;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -199,6 +200,11 @@ export type QuerySingleUserArgs = {
 
 export type QueryTweetArgs = {
   id?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryUserTweetsArgs = {
+  userId?: InputMaybe<Scalars['Int']>;
 };
 
 export enum SortOrder {
@@ -372,6 +378,13 @@ export type SingleUserQueryVariables = Exact<{
 
 
 export type SingleUserQuery = { __typename?: 'Query', singleUser?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined, website?: string | null | undefined } | null | undefined } | null | undefined };
+
+export type UserTweetsQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type UserTweetsQuery = { __typename?: 'Query', userTweets?: Array<{ __typename?: 'Tweet', id: number, createdAt: any, content?: string | null | undefined, likes?: Array<{ __typename?: 'LikedTweet', id: number } | null | undefined> | null | undefined, comments?: Array<{ __typename?: 'Comment', content?: string | null | undefined, id: number } | null | undefined> | null | undefined, author?: { __typename?: 'User', id: number, name?: string | null | undefined, profile?: { __typename?: 'Profile', id: number, avatar?: string | null | undefined } | null | undefined } | null | undefined } | null | undefined> | null | undefined };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1084,6 +1097,58 @@ export function useSingleUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type SingleUserQueryHookResult = ReturnType<typeof useSingleUserQuery>;
 export type SingleUserLazyQueryHookResult = ReturnType<typeof useSingleUserLazyQuery>;
 export type SingleUserQueryResult = Apollo.QueryResult<SingleUserQuery, SingleUserQueryVariables>;
+export const UserTweetsDocument = gql`
+    query UserTweets($userId: Int) {
+  userTweets(userId: $userId) {
+    id
+    createdAt
+    content
+    likes {
+      id
+    }
+    comments {
+      content
+      id
+    }
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useUserTweetsQuery__
+ *
+ * To run a query within a React component, call `useUserTweetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserTweetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserTweetsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUserTweetsQuery(baseOptions?: Apollo.QueryHookOptions<UserTweetsQuery, UserTweetsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserTweetsQuery, UserTweetsQueryVariables>(UserTweetsDocument, options);
+      }
+export function useUserTweetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserTweetsQuery, UserTweetsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserTweetsQuery, UserTweetsQueryVariables>(UserTweetsDocument, options);
+        }
+export type UserTweetsQueryHookResult = ReturnType<typeof useUserTweetsQuery>;
+export type UserTweetsLazyQueryHookResult = ReturnType<typeof useUserTweetsLazyQuery>;
+export type UserTweetsQueryResult = Apollo.QueryResult<UserTweetsQuery, UserTweetsQueryVariables>;
 export const UsersDocument = gql`
     query users {
   users {
@@ -1129,6 +1194,7 @@ export const namedOperations = {
     PopularTweets: 'PopularTweets',
     SingleTweet: 'SingleTweet',
     SingleUser: 'SingleUser',
+    UserTweets: 'UserTweets',
     users: 'users'
   },
   Mutation: {

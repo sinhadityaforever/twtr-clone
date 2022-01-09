@@ -125,6 +125,20 @@ const Query = objectType({
       },
     })
 
+    t.list.field('userTweets', {
+      type: 'Tweet',
+      args: {
+        userId: intArg(),
+      },
+      resolve: async (parent, { userId }, ctx) => {
+        return ctx.prisma.tweet.findMany({
+          where: {
+            authorId: userId,
+          },
+        })
+      },
+    })
+
     t.list.field(
       'likesNumber',
 
@@ -217,6 +231,7 @@ const Mutation = objectType({
         })
       },
     })
+
     t.field('deleteFollow', {
       type: 'Following',
       args: {

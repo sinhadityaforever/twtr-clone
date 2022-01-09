@@ -21,7 +21,10 @@ const LikeTweet = ({ id }: Props) => {
     });
   };
   return (
-    <span onClick={handleCreateLike} style={{ marginRight: "5px" }}>
+    <span
+      onClick={handleCreateLike}
+      style={{ marginRight: "5px", cursor: "pointer" }}
+    >
       <i className="far fa-thumbs-up" aria-hidden="true" />
     </span>
   );

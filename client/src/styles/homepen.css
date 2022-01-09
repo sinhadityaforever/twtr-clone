@@ -1,0 +1,14 @@
+.home-pen {
+  position: fixed;
+  bottom: 5rem;
+  left: 0;
+  width: 15%;
+
+  margin-bottom: 0;
+  left: 75vw;
+}
+@media (min-width: 768px) {
+  .home-pen {
+    display: none;
+  }
+}

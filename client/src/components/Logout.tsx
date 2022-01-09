@@ -44,7 +44,7 @@ const Logout = (props: Props) => {
             ) : (
               <i className="fa fa-user" aria-hidden="true"></i>
             )}
-            <span style={{ marginLeft: "10px", marginTop: "-10px" }}>
+            <span style={{ marginLeft: "10px", marginBottom: "1rem" }}>
               {data?.me?.name}
             </span>
             <span style={{ marginLeft: "30px" }}>

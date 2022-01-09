@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import { List } from "react-content-loader";
 import ReactLoading from "react-loading";
 import "../styles/login.css";
 import { useLoginMutation, useMeQuery } from "../generated/graphql";
@@ -30,14 +31,18 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
 
   if (meLoading) {
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "50vh",
+        }}
+      >
         <img
           src={favicon}
           style={{
             height: "10rem",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
           }}
         ></img>
       </div>
@@ -82,7 +87,7 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
           <Field name="password" type="password" placeholder="password" />
           <ErrorMessage name="password" component={"div"} />
           {loading ? (
-            <ReactLoading type="bubbles"></ReactLoading>
+            <ReactLoading type="bubbles" color="#55ADEE"></ReactLoading>
           ) : (
             <button type="submit" className="login-button">
               Login
@@ -92,7 +97,14 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
       </Formik>
       <div className="register">
         <h4>Don't have an account?</h4>
-        <Link to="/signup">Sign up</Link>
+        <Link to="/signup">
+          <button
+            style={{ backgroundColor: "#228dcf" }}
+            className="login-button"
+          >
+            Signup
+          </button>
+        </Link>
       </div>
     </div>
   );

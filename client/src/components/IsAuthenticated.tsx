@@ -12,20 +12,25 @@ const IsAuthenticated = ({ children }: Props) => {
   const { data, loading, error } = useMeQuery();
   if (loading) {
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "50vh",
+        }}
+      >
         <img
           src={favicon}
           style={{
             height: "10rem",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
           }}
         ></img>
       </div>
     );
   }
   if (error) {
+    navigate("/landing");
     return <p>{error.message}</p>;
   }
   if (!data?.me) {

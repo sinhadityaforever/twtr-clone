@@ -44,3 +44,9 @@
   margin-bottom: 20px;
   background-color: var(--accent);
 }
+
+@media (max-width: 768px) {
+  .popular-tweets {
+    display: none;
+  }
+}

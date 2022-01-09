@@ -1,0 +1,22 @@
+query UserTweets($userId: Int) {
+  userTweets(userId: $userId) {
+    id
+    createdAt
+    content
+    likes {
+      id
+    }
+    comments {
+      content
+      id
+    }
+    author {
+      id
+      name
+      profile {
+        id
+        avatar
+      }
+    }
+  }
+}

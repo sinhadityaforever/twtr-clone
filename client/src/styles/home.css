@@ -17,7 +17,15 @@
 .home-header {
   border-bottom: 1px solid var(--accent);
   display: grid;
+
+  background-color: white;
   grid-template-columns: 0.5fr 0.5fr 12fr;
+}
+@media (max-width: 768px) {
+  .home-header {
+    position: fixed;
+    top: 0;
+  }
 }
 .home-title {
   text-align: left;
@@ -32,6 +40,18 @@ h3 {
   font-size: 20px;
 
   margin-top: 0;
+}
+
+.home-avatar {
+  width: 2.5rem;
+  border-radius: 50%;
+  margin-top: 0.5rem;
+  margin-left: 0.3rem;
+}
+@media (min-width: 768px) {
+  .home-avatar {
+    display: none;
+  }
 }
 
 .home-tweet-button {

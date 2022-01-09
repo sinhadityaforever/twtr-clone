@@ -46,7 +46,7 @@ const SingleTweet = (props: Props) => {
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 8fr",
-                marginTop: "10px",
+                marginTop: "5rem",
                 marginLeft: "10px",
               }}
             >
@@ -54,7 +54,7 @@ const SingleTweet = (props: Props) => {
                 src={
                   data?.tweet?.author?.profile?.avatar
                     ? data?.tweet?.author?.profile?.avatar
-                    : ""
+                    : "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
                 }
                 style={{ width: "40px", borderRadius: "50%" }}
                 alt="avatar"

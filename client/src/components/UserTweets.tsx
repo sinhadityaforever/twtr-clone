@@ -2,16 +2,22 @@ import { formatDistance, subDays } from "date-fns";
 import React from "react";
 import ContentLoader, { Facebook, Instagram } from "react-content-loader";
 import { Link } from "react-router-dom";
-import { useAllTweetsQuery, useMyProfileQuery } from "../generated/graphql";
+import { useMyProfileQuery, useUserTweetsQuery } from "../generated/graphql";
 import "../styles/allTweets.css";
 import CreateComment from "./CreateComment";
 import DeleteLike from "./DeleteLike";
 import LikeTweet from "./LikeTweet";
 
-interface Props {}
+interface Props {
+  userId: number;
+}
 
-const AllTweets = (props: Props) => {
-  const { data, loading, error } = useAllTweetsQuery();
+const UserTweets = ({ userId }: Props) => {
+  const { data, loading, error } = useUserTweetsQuery({
+    variables: {
+      userId,
+    },
+  });
   const {
     data: meData,
     loading: meLoading,
@@ -54,7 +60,7 @@ const AllTweets = (props: Props) => {
 
   return (
     <div style={{ marginTop: "4.5rem" }}>
-      {data?.tweets?.map((tweet) => (
+      {data?.userTweets?.map((tweet) => (
         <div className="tweet-container">
           <Link to={`/tweet/${tweet?.id}`}>
             <div className="tweet-header">
@@ -123,4 +129,4 @@ const AllTweets = (props: Props) => {
   );
 };
 
-export default AllTweets;
+export default UserTweets;
